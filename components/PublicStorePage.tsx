@@ -4,7 +4,7 @@
 */
 
 import React, { useState, useEffect } from 'react';
-import { useSupabase } from '../App'; // Use the Context hook from App.tsx
+import { useSupabase } from '../App';
 import { Product } from '../types';
 
 interface PublicStorePageProps {
@@ -19,29 +19,36 @@ interface SupabaseStore {
   whatsapp_number: string;
   currency: string;
   logo_url?: string;
+  creator_id?: string;
   products: Product[];
 }
 
 const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
-  const supabase = useSupabase(); // Use Context hook - no local client
+  const { supabase, user } = useSupabase();
   const [store, setStore] = useState<SupabaseStore | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadStore();
-  }, [slug]);
+  }, [slug, supabase]);
 
   const loadStore = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      // Fetch store by slug with products
       const { data: storeData, error: storeError } = await supabase
         .from('stores')
         .select(`
-          *,
+          id,
+          slug,
+          name,
+          description,
+          whatsapp_number,
+          currency,
+          logo_url,
+          creator_id,
           products (
             id,
             name,
@@ -53,11 +60,18 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
         .eq('slug', slug)
         .single();
 
-      if (storeError) throw storeError;
+      if (storeError) {
+        if (storeError.code === 'PGRST116') {
+          setError('Store not found');
+        } else {
+          console.error('Store loading error:', storeError);
+          setError('Failed to load store. Please try again later.');
+        }
+        return;
+      }
 
       if (storeData) {
-        // Map products to match Product type
-        const mappedProducts: Product[] = storeData.products.map((p: any) => ({
+        const mappedProducts: Product[] = (storeData.products || []).map((p: any) => ({
           id: p.id,
           name: p.name,
           description: p.description,
@@ -67,16 +81,21 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
         }));
 
         const processedStore: SupabaseStore = {
-          ...storeData,
-          whatsappNumber: storeData.whatsapp_number, // Map for compatibility
+          id: storeData.id,
+          slug: storeData.slug,
+          name: storeData.name,
+          description: storeData.description,
+          whatsapp_number: storeData.whatsapp_number,
+          currency: storeData.currency,
+          logo_url: storeData.logo_url,
+          creator_id: storeData.creator_id,
           products: mappedProducts
         };
+
         setStore(processedStore);
-      } else {
-        setError('Store not found');
       }
     } catch (err) {
-      console.error('Error loading store:', err);
+      console.error('Unexpected error loading store:', err);
       setError('Failed to load store. Please try again later.');
     } finally {
       setLoading(false);
@@ -93,9 +112,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
     window.open(whatsappUrl, '_blank');
   };
 
-  const handleCreateOwnStore = () => {
-    window.location.href = '/';
-  };
+  const isOwner = user && store && store.creator_id === user.id;
 
   if (loading) {
     return (
@@ -120,7 +137,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
             {error || 'The store you are looking for does not exist.'}
           </p>
           <button
-            onClick={handleCreateOwnStore}
+            onClick={() => window.location.href = '/'}
             className="clay-button-primary px-8 py-4 text-sm"
           >
             Create Your Own Store
@@ -131,7 +148,27 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] text-black font-sans selection:bg-black selection:text-white pb-24">
+    <div className="min-h-screen bg-[#FDFDFD] text-black font-sans selection:bg-black selection:text-white pb-24 relative">
+      {/* Owner Management Buttons - Floating on top-right, clean and professional */}
+      {isOwner && (
+        <div className="fixed top-24 right-4 z-50 flex flex-col gap-3">
+          <button
+            onClick={() => window.location.href = '/inventory'}
+            className="bg-black text-white px-6 py-4 rounded-2xl font-black uppercase tracking-wider text-sm shadow-2xl hover:shadow-xl transition-all flex items-center gap-3 hover:scale-105"
+          >
+            <span className="text-xl">➕</span>
+            Add Product
+          </button>
+          <button
+            onClick={() => window.location.href = '/inventory'}
+            className="bg-gray-800 text-white px-6 py-4 rounded-2xl font-black uppercase tracking-wider text-sm shadow-2xl hover:shadow-xl transition-all flex items-center gap-3 hover:scale-105"
+          >
+            <span className="text-xl">✏️</span>
+            Edit / Delete Products
+          </button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="pt-32 md:pt-40 pb-12 md:pb-16 px-4 md:px-6">
         <div className="max-w-[1200px] mx-auto text-center">
@@ -163,7 +200,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
       </div>
 
       {/* Products Grid */}
-      <div className="px-4 md:px-6">
+      <div className="px-4 md:px-6 pb-20">
         <div className="max-w-[1200px] mx-auto">
           <div className="mb-8">
             <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">
@@ -174,20 +211,28 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
           {store.products.length === 0 ? (
             <div className="clay-card p-12 md:p-20 text-center">
               <span className="text-6xl mb-4 block">📦</span>
-              <p className="font-black uppercase tracking-widest text-gray-400">
+              <p className="font-black uppercase tracking-widest text-gray-400 mb-8">
                 No products available yet
               </p>
+              {isOwner && (
+                <button
+                  onClick={() => window.location.href = '/inventory'}
+                  className="clay-button bg-black text-white px-10 py-5 text-lg font-black"
+                >
+                  ➕ Add Your First Product
+                </button>
+              )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {store.products.map((product) => (
-                <div key={product.id} className="clay-card overflow-hidden group">
+                <div key={product.id} className="clay-card overflow-hidden group hover:shadow-2xl transition-shadow">
                   {/* Product Image */}
                   <div className="aspect-square bg-gray-100 overflow-hidden">
                     <img
                       src={product.image || '/placeholder-image.jpg'}
                       alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       onError={(e) => {
                         e.currentTarget.src = '/placeholder-image.jpg';
                       }}
@@ -195,27 +240,26 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
                   </div>
 
                   {/* Product Info */}
-                  <div className="p-5">
-                    <h3 className="font-black text-lg mb-2 line-clamp-1">{product.name}</h3>
+                  <div className="p-6">
+                    <h3 className="font-black text-xl mb-2 line-clamp-1">{product.name}</h3>
 
                     {product.description && (
-                      <p className="text-sm text-gray-500 font-bold mb-4 line-clamp-2">
+                      <p className="text-sm text-gray-600 font-bold mb-4 line-clamp-2">
                         {product.description}
                       </p>
                     )}
 
                     {/* Price and Buy Button */}
-                    <div className="flex items-center justify-between gap-4 pt-4 border-t-2 border-gray-100">
-                      <div className="text-2xl font-black">
+                    <div className="flex items-center justify-between gap-4 pt-6 border-t-2 border-gray-100">
+                      <div className="text-3xl font-black">
                         {store.currency}{product.price}
                       </div>
                       <button
                         onClick={() => handleBuyProduct(product)}
-                        className="px-5 py-3 bg-[#25D366] text-white font-black uppercase tracking-widest rounded-xl hover:bg-[#128C7E] transition-all text-xs flex items-center gap-2 shadow-lg"
+                        className="px-6 py-4 bg-[#25D366] text-white font-black uppercase tracking-widest rounded-xl hover:bg-[#128C7E] transition-all text-sm flex items-center gap-3 shadow-xl hover:shadow-2xl"
                       >
-                        <span>💬</span>
-                        <span className="hidden sm:inline">Buy on WhatsApp</span>
-                        <span className="sm:hidden">Buy</span>
+                        <span className="text-xl">💬</span>
+                        <span>Buy on WhatsApp</span>
                       </button>
                     </div>
                   </div>
@@ -230,10 +274,10 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
       <div className="mt-20 py-12 border-t-2 border-gray-100">
         <div className="text-center px-4">
           <p className="text-sm font-black uppercase tracking-widest text-gray-400 mb-4">
-            Powered by STORELINK
+            Powered by ShopSmart
           </p>
           <button
-            onClick={handleCreateOwnStore}
+            onClick={() => window.location.href = '/'}
             className="clay-button px-8 py-4 text-sm inline-flex items-center gap-2"
           >
             <span>✨</span>

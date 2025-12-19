@@ -5,31 +5,38 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// Replace these with your actual Supabase credentials
-// Get them from: https://app.supabase.com/project/_/settings/api
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'YOUR_SUPABASE_URL';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Helper function to upload image to Supabase Storage
-export async function uploadImage(file: File): Promise<string> {
+// Helper function to upload image with timeout and fallback
+async function uploadImage(file: File, bucket: 'store-logos' | 'product-images'): Promise<string | null> {
   const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${file.name}`;
 
-  const { data, error } = await supabase.storage
-    .from('store-images')
-    .upload(fileName, file);
+  try {
+    const uploadTask = supabase.storage
+      .from(bucket)
+      .upload(fileName, file);
 
-  if (error) {
-    console.error('Upload error:', error);
-    throw new Error(`Failed to upload image: ${error.message}`);
+    // 60-second timeout
+    const timeout = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Upload timeout')), 60000)
+    );
+
+    const { data, error } = await Promise.race([uploadTask, timeout]);
+
+    if (error) throw error;
+
+    const { data: urlData } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(fileName);
+
+    return urlData.publicUrl;
+  } catch (err) {
+    console.error(`Upload failed for ${bucket}:`, err);
+    return null; // Continue without image
   }
-
-  const { data: urlData } = supabase.storage
-    .from('store-images')
-    .getPublicUrl(fileName);
-
-  return urlData.publicUrl;
 }
 
 // Helper function to generate unique slug
@@ -39,7 +46,6 @@ export async function generateUniqueSlug(name: string): Promise<string> {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
 
-  // Check if slug exists
   const { data: existing } = await supabase
     .from('stores')
     .select('slug')
@@ -65,7 +71,7 @@ export interface ProductData {
   name: string;
   description: string;
   price: number;
-  imageFile: File;
+  imageFile?: File | null; // Made optional to allow no image
 }
 
 export interface SupabaseStore {
@@ -77,6 +83,7 @@ export interface SupabaseStore {
   logo_url: string | null;
   currency: string;
   created_at: string;
+  creator_id: string;
 }
 
 export interface SupabaseProduct {
@@ -85,7 +92,7 @@ export interface SupabaseProduct {
   name: string;
   description: string;
   price: number;
-  image_url: string;
+  image_url: string | null;
   created_at: string;
 }
 
@@ -93,18 +100,22 @@ export interface StoreWithProducts extends SupabaseStore {
   products: SupabaseProduct[];
 }
 
-// Create store with products
+// Create store with products — robust version
 export async function createStore(storeData: StoreData, products: ProductData[]): Promise<SupabaseStore> {
-  // Generate unique slug
-  const slug = await generateUniqueSlug(storeData.name);
-
-  // Upload logo if exists
-  let logoUrl = null;
-  if (storeData.logoFile) {
-    logoUrl = await uploadImage(storeData.logoFile);
+  const currentUser = (await supabase.auth.getUser()).data.user;
+  if (!currentUser) {
+    throw new Error('You must be logged in to create a store.');
   }
 
-  // Insert store
+  const slug = await generateUniqueSlug(storeData.name);
+
+  // Upload logo with fallback
+  let logoUrl: string | null = null;
+  if (storeData.logoFile) {
+    logoUrl = await uploadImage(storeData.logoFile, 'store-logos');
+  }
+
+  // Insert store with creator_id
   const { data: store, error: storeError } = await supabase
     .from('stores')
     .insert({
@@ -113,7 +124,8 @@ export async function createStore(storeData: StoreData, products: ProductData[])
       description: storeData.description,
       whatsapp_number: storeData.whatsappNumber,
       logo_url: logoUrl,
-      currency: storeData.currency
+      currency: storeData.currency,
+      creator_id: currentUser.id  // Critical for RLS
     })
     .select()
     .single();
@@ -123,24 +135,31 @@ export async function createStore(storeData: StoreData, products: ProductData[])
     throw new Error(`Failed to create store: ${storeError.message}`);
   }
 
-  // Upload product images and insert products
-  for (const product of products) {
-    const imageUrl = await uploadImage(product.imageFile);
+  // Upload product images in parallel with timeout/fallback
+  const processedProducts = await Promise.all(
+    products.map(async (product) => {
+      let imageUrl: string | null = null;
+      if (product.imageFile) {
+        imageUrl = await uploadImage(product.imageFile, 'product-images');
+      }
 
-    const { error: productError } = await supabase
-      .from('products')
-      .insert({
+      return {
         store_id: store.id,
         name: product.name,
         description: product.description,
         price: product.price,
         image_url: imageUrl
-      });
+      };
+    })
+  );
 
-    if (productError) {
-      console.error('Product creation error:', productError);
-      throw new Error(`Failed to create product: ${productError.message}`);
-    }
+  const { error: productsError } = await supabase
+    .from('products')
+    .insert(processedProducts);
+
+  if (productsError) {
+    console.error('Products creation error:', productsError);
+    throw new Error(`Failed to create products: ${productsError.message}`);
   }
 
   return store;
@@ -158,10 +177,7 @@ export async function getStoreBySlug(slug: string): Promise<StoreWithProducts | 
     .single();
 
   if (error) {
-    if (error.code === 'PGRST116') {
-      // Not found
-      return null;
-    }
+    if (error.code === 'PGRST116') return null;
     console.error('Get store error:', error);
     throw new Error(`Failed to get store: ${error.message}`);
   }
