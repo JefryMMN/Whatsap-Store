@@ -1,10 +1,9 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
 
-export const BRAND_NAME = 'ShopSmart';
+export const BRAND_NAME = 'Storefront';
 export const COMPANY_NAME = 'Schroeder Technologies';
 export const DESIGN_STUDIO = 'Gregorious Creative Studios';
 

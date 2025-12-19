@@ -112,7 +112,7 @@ const AddProductsForm: React.FC<AddProductsFormProps> = ({ onNext, onBack, curre
       name: product.name,
       description: product.description,
       price: product.price.toString(),
-      imageFile: product.imageFile, // File may not persist, but preview does
+      imageFile: product.imageFile,
       imagePreview: product.imagePreview
     });
     handleRemoveProduct(product.id);
@@ -120,25 +120,44 @@ const AddProductsForm: React.FC<AddProductsFormProps> = ({ onNext, onBack, curre
 
   const handleNext = () => {
     if (products.length === 0) {
-      alert('Please add at least one product before continuing');
+      setErrors({ ...errors, general: 'Please add at least one product before continuing' });
       return;
     }
     onNext(products);
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] pt-32 pb-24 px-4 md:px-6 max-w-[1200px] mx-auto">
-      <div className="w-full max-w-4xl my-8 mx-auto">
+    <div className="bg-[#FDFDFD] pt-24 md:pt-36 pb-24 px-4 md:px-6">
+      {/* Back Button - in wider container */}
+      <div className="max-w-[1200px] mx-auto">
+        <button
+          onClick={onBack}
+          className="mb-6 flex items-center gap-2 text-gray-600 hover:text-black font-bold transition-colors group text-sm"
+        >
+          <span className="group-hover:-translate-x-1 transition-transform">←</span>
+          Back
+        </button>
+      </div>
+
+      {/* Content - in narrower centered container */}
+      <div className="w-full max-w-4xl mx-auto bg-white rounded-2xl border-2 border-black shadow-xl">
         <div className="p-6 md:p-8">
           {/* Header */}
           <div className="mb-8 border-b-2 border-black pb-6">
-            <span className="clay-text-convex bg-black text-white border-none mb-4">Step 2 of 3</span>
+            <span className="inline-block px-3 py-1 bg-black text-white text-xs font-black uppercase tracking-widest rounded-full mb-4">Step 2 of 3</span>
             <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter mt-4">Add Products</h2>
             <p className="text-gray-500 font-bold mt-2">Add at least 1 product to your store</p>
           </div>
 
+          {/* General Error */}
+          {errors.general && (
+            <div className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-xl">
+              <p className="text-red-600 font-bold text-sm text-center">⚠️ {errors.general}</p>
+            </div>
+          )}
+
           {/* Current Product Form */}
-          <div className="bg-gray-50 rounded-2xl p-6 mb-6">
+          <div className="bg-gray-50 rounded-2xl p-6 mb-6 border-2 border-gray-200">
             <h3 className="font-black uppercase tracking-widest text-sm mb-6">New Product</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -235,9 +254,9 @@ const AddProductsForm: React.FC<AddProductsFormProps> = ({ onNext, onBack, curre
             <button
               type="button"
               onClick={handleAddProduct}
-              className="clay-button-primary px-8 py-4 text-sm mt-6 w-full md:w-auto"
+              className="px-8 py-4 bg-black text-white font-black uppercase tracking-widest rounded-full border-2 border-black hover:bg-gray-900 transition-all text-sm mt-6 w-full md:w-auto"
             >
-              + Add Product
+              + ADD PRODUCT
             </button>
           </div>
 
@@ -249,7 +268,7 @@ const AddProductsForm: React.FC<AddProductsFormProps> = ({ onNext, onBack, curre
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {products.map((product) => (
-                  <div key={product.id} className="clay-card p-4 flex gap-4">
+                  <div key={product.id} className="p-4 flex gap-4 bg-white rounded-xl border-2 border-gray-200">
                     <img
                       src={product.imagePreview || ''}
                       alt={product.name}
@@ -285,17 +304,17 @@ const AddProductsForm: React.FC<AddProductsFormProps> = ({ onNext, onBack, curre
             <button
               type="button"
               onClick={onBack}
-              className="clay-button px-8 py-4 text-sm flex-1"
+              className="px-8 py-4 bg-white text-black font-black uppercase tracking-widest rounded-full border-2 border-black hover:bg-gray-100 transition-all text-sm flex-1"
             >
               ← Back
             </button>
             <button
               type="button"
               onClick={handleNext}
-              className="clay-button-primary px-8 py-4 text-sm flex-1"
               disabled={products.length === 0}
+              className="px-8 py-4 bg-black rounded-full border-2 border-black hover:bg-gray-900 transition-all text-sm flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create Store →
+              <span className="text-white font-black uppercase tracking-widest">CREATE STORE →</span>
             </button>
           </div>
         </div>

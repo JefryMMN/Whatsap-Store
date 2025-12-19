@@ -16,7 +16,7 @@ import CreateStoreFlow from './components/CreateStoreFlow';
 import PublicStorePage from './components/PublicStorePage';
 import { AppView, Product, CartItem, Order, AppSettings } from './types';
 import { ORDER_STATUSES, BRAND_NAME } from './constants';
-import { supabase } from './services/supabase'; // ← NEW: Import the single client
+import { supabase } from './services/supabase';
 
 // Supabase Context (updated with auth)
 const SupabaseContext = createContext<{
@@ -52,7 +52,7 @@ const SupabaseProvider: React.FC<SupabaseProviderProps> = ({ children }) => {
     });
 
     return () => subscription.unsubscribe();
-  }, []); // ← Empty dependency array (supabase is now imported globally)
+  }, []);
 
   const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -89,8 +89,13 @@ const AppContent: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [isOwnerForStore, setIsOwnerForStore] = useState<Record<string, boolean>>({});
   const [showLogin, setShowLogin] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [signUpSuccess, setSignUpSuccess] = useState(false);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [pendingCreateStore, setPendingCreateStore] = useState(false);
   
   // Settings / Store Profile
   const [settings, setSettings] = useState<AppSettings>({
@@ -112,18 +117,103 @@ const AppContent: React.FC = () => {
 
   const [activeCategory, setActiveCategory] = useState('All');
 
+  // Handle redirect to create store after login OR show login modal if not logged in
+  useEffect(() => {
+    if (pendingCreateStore) {
+      if (user) {
+        // User is logged in - redirect to create store
+        setPendingCreateStore(false);
+        setShowLogin(false);
+        setView('create-store');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.history.pushState({}, '', '/create-store');
+      } else if (user === null) {
+        // User is definitely not logged in (not just loading) - show login modal
+        setShowLogin(true);
+      }
+    }
+  }, [user, pendingCreateStore]);
+
   // Login handlers
   const handleSignIn = async () => {
+    if (!loginEmail.trim() || !loginPassword.trim()) {
+      setLoginError('Please enter email and password');
+      return;
+    }
+
+    setLoginLoading(true);
+    setLoginError(null);
+
     try {
       await signIn(loginEmail, loginPassword);
+      // Note: Redirect is handled by useEffect watching user + pendingCreateStore
       setShowLogin(false);
+      setLoginEmail('');
+      setLoginPassword('');
+      setIsSignUp(false);
     } catch (error: any) {
-      alert(error.message);
+      setLoginError(error.message || 'Failed to sign in');
+    } finally {
+      setLoginLoading(false);
     }
   };
 
-  const handleShowLogin = () => setShowLogin(true);
-  const handleHideLogin = () => setShowLogin(false);
+  // Sign Up handler
+  const handleSignUp = async () => {
+    if (!loginEmail.trim() || !loginPassword.trim()) {
+      setLoginError('Please enter email and password');
+      return;
+    }
+
+    if (loginPassword.length < 6) {
+      setLoginError('Password must be at least 6 characters');
+      return;
+    }
+
+    setLoginLoading(true);
+    setLoginError(null);
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: loginEmail,
+        password: loginPassword
+      });
+
+      if (error) throw error;
+
+      if (data.user && !data.session) {
+        // Email confirmation required - show success message
+        setSignUpSuccess(true);
+        setLoginEmail('');
+        setLoginPassword('');
+      } else {
+        // Auto-confirmed (if email confirmation is disabled in Supabase)
+        // Note: Redirect is handled by useEffect watching user + pendingCreateStore
+        setShowLogin(false);
+        setLoginEmail('');
+        setLoginPassword('');
+        setIsSignUp(false);
+      }
+    } catch (error: any) {
+      setLoginError(error.message || 'Failed to sign up');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  const handleShowLogin = () => {
+    setLoginError(null);
+    setIsSignUp(false);
+    setShowLogin(true);
+  };
+
+  const handleHideLogin = () => {
+    setShowLogin(false);
+    setLoginError(null);
+    setIsSignUp(false);
+    setSignUpSuccess(false);
+    setPendingCreateStore(false);
+  };
 
   // Initialization
   useEffect(() => {
@@ -133,6 +223,12 @@ const AppContent: React.FC = () => {
     if (storeMatch) {
       setPublicStoreSlug(storeMatch[1]);
       setView('public-store');
+      return;
+    }
+
+    // Handle /create-store path - set pending flag, useEffect will handle redirect when user loads
+    if (path === '/create-store') {
+      setPendingCreateStore(true);
       return;
     }
 
@@ -174,7 +270,7 @@ const AppContent: React.FC = () => {
     } else {
       setAllStores(data || []);
 
-      // Compute ownership directly from stores data (more reliable)
+      // Compute ownership directly from stores data
       if (user && data) {
         const ownership: Record<string, boolean> = {};
         data.forEach((store: any) => {
@@ -211,11 +307,11 @@ const AppContent: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // FIXED: Require login before opening create store flow
+  // Require login before opening create store flow - NO ALERT
   const handleOpenCreateStore = () => {
     if (!user) {
+      setPendingCreateStore(true);
       setShowLogin(true);
-      alert("Please log in to create your shop!");
       return;
     }
     setView('create-store');
@@ -229,7 +325,6 @@ const AppContent: React.FC = () => {
     window.history.pushState({}, '', '/');
   };
 
-  // SIMPLIFIED: creator_id is now set directly in CreateStoreFlow — no need for fallback update
   const handleStoreCreated = (slug: string) => {
     setPublicStoreSlug(slug);
     setView('public-store');
@@ -285,7 +380,7 @@ const AppContent: React.FC = () => {
     });
     if (error) alert(error.message);
     else {
-      loadAllProducts(); // Refresh
+      loadAllProducts();
     }
   };
 
@@ -309,79 +404,284 @@ const AppContent: React.FC = () => {
 
   const renderDashboard = () => (
     <div className="pt-28 md:pt-32 pb-24 px-4 md:px-6 max-w-[1200px] mx-auto animate-fade-in">
-      {/* Dashboard content unchanged */}
-      {/* ... your existing dashboard code ... */}
+      {/* Dashboard content */}
     </div>
   );
 
   const renderShopView = () => (
-    <div className="pt-28 md:pt-32 pb-24 px-4 md:px-6 max-w-[1200px] mx-auto animate-fade-in">
-      {/* Shop view unchanged */}
-      {/* ... your existing shop view code ... */}
+    <div className="pt-24 md:pt-36 pb-24 px-4 md:px-6 max-w-[1200px] mx-auto animate-fade-in">
+      {/* Back Button */}
+      <button
+        onClick={() => handleNav('landing')}
+        className="mb-4 flex items-center gap-2 text-gray-600 hover:text-black font-bold transition-colors group text-sm"
+      >
+        <span className="group-hover:-translate-x-1 transition-transform">←</span>
+        Back to Home
+      </button>
+
+      <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter mb-5 md:mb-8">All Shops</h1>
+      
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : allStores.length === 0 ? (
+        <div className="text-center py-20">
+          <span className="text-6xl mb-4 block">🏪</span>
+          <p className="text-gray-500 font-bold">No stores yet. Be the first to create one!</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {allStores.map((store) => (
+            <div 
+              key={store.id} 
+              className="clay-card p-6 cursor-pointer hover:shadow-xl transition-shadow"
+              onClick={() => {
+                setPublicStoreSlug(store.slug);
+                setView('public-store');
+                window.history.pushState({}, '', `/store/${store.slug}`);
+              }}
+            >
+              <div className="flex items-center gap-4 mb-4">
+                {store.logo_url ? (
+                  <img src={store.logo_url} alt={store.name} className="w-16 h-16 rounded-xl object-cover" />
+                ) : (
+                  <div className="w-16 h-16 bg-black text-white rounded-xl flex items-center justify-center text-2xl font-black">
+                    {store.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div>
+                  <h3 className="font-black text-lg">{store.name}</h3>
+                  <p className="text-gray-500 text-sm font-bold">{store.currency}</p>
+                </div>
+              </div>
+              {store.description && (
+                <p className="text-gray-600 text-sm font-bold line-clamp-2">{store.description}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 
-  const renderItemsView = () => {
-    // Items view unchanged — already solid
-    // ... your existing renderItemsView code ...
-  };
+  const renderItemsView = () => (
+    <div className="pt-24 md:pt-36 pb-24 px-4 md:px-6 max-w-[1200px] mx-auto animate-fade-in">
+      {/* Back Button */}
+      <button
+        onClick={() => handleNav('landing')}
+        className="mb-4 flex items-center gap-2 text-gray-600 hover:text-black font-bold transition-colors group text-sm"
+      >
+        <span className="group-hover:-translate-x-1 transition-transform">←</span>
+        Back to Home
+      </button>
+
+      <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter mb-5 md:mb-8">All Items</h1>
+      
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : allProducts.length === 0 ? (
+        <div className="text-center py-20">
+          <span className="text-6xl mb-4 block">📦</span>
+          <p className="text-gray-500 font-bold">No products yet.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {allProducts.map((product) => (
+            <div key={product.id} className="clay-card overflow-hidden group">
+              <div className="aspect-square bg-gray-100 overflow-hidden">
+                <img
+                  src={product.image_url || '/placeholder-image.jpg'}
+                  alt={product.name}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  onError={(e) => { e.currentTarget.src = '/placeholder-image.jpg'; }}
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="font-black text-lg mb-1 line-clamp-1">{product.name}</h3>
+                {product.stores && (
+                  <p className="text-gray-500 text-xs font-bold mb-2">from {product.stores.name}</p>
+                )}
+                <div className="flex items-center justify-between">
+                  <span className="text-xl font-black">
+                    {product.stores?.currency || '$'}{product.price}
+                  </span>
+                  <button
+                    onClick={() => {
+                      if (product.stores) {
+                        const message = encodeURIComponent(
+                          `Hi! I'm interested in "${product.name}" (${product.stores.currency}${product.price})`
+                        );
+                        window.open(`https://wa.me/${product.stores.whatsapp_number}?text=${message}`, '_blank');
+                      }
+                    }}
+                    className="px-4 py-2 bg-[#25D366] text-white text-xs font-black rounded-lg hover:bg-[#128C7E] transition-colors"
+                  >
+                    💬 Buy
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] text-black font-sans selection:bg-black selection:text-white flex flex-col overflow-hidden">
-      <Navbar onNavClick={handleNav} activeView={view} />
+      <Navbar 
+        onNavClick={handleNav} 
+        activeView={view} 
+        user={user}
+        onSignIn={handleShowLogin}
+        onSignOut={async () => {
+          try {
+            await signOut();
+            window.location.href = '/';
+          } catch (err) {
+            console.error('Logout error:', err);
+          }
+        }}
+      />
       
-      {/* Login Overlay */}
+      {/* Professional Login/SignUp Modal */}
       {showLogin && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-xl max-w-md w-full mx-4">
-            <h2 className="text-2xl font-black mb-4">Login to Manage</h2>
-            <input
-              type="email"
-              placeholder="Email"
-              value={loginEmail}
-              onChange={(e) => setLoginEmail(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg mb-4"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={loginPassword}
-              onChange={(e) => setLoginPassword(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg mb-4"
-            />
-            <button
-              onClick={handleSignIn}
-              className="w-full py-3 bg-black text-white font-black rounded-lg mb-2"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={handleHideLogin}
-              className="w-full py-2 text-gray-500"
-            >
-              Cancel (View Only)
-            </button>
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999]"
+          onClick={handleHideLogin}
+        >
+          <div 
+            className="bg-white p-8 rounded-3xl max-w-md w-full mx-4 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Success State - Email Confirmation */}
+            {signUpSuccess ? (
+              <div className="text-center py-4">
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-4xl">✉️</span>
+                </div>
+                <h2 className="text-2xl font-black uppercase tracking-tighter mb-3">Check Your Email</h2>
+                <p className="text-gray-500 font-bold mb-6">
+                  We've sent a confirmation link to your email address. Please click the link to activate your account.
+                </p>
+                <button
+                  onClick={() => {
+                    setSignUpSuccess(false);
+                    setIsSignUp(false);
+                  }}
+                  className="w-full py-4 bg-black text-white font-black uppercase tracking-widest rounded-xl hover:bg-gray-800 transition-colors"
+                >
+                  Back to Sign In
+                </button>
+                <button
+                  onClick={handleHideLogin}
+                  className="w-full py-3 text-gray-500 font-bold hover:text-black transition-colors mt-3"
+                >
+                  Close
+                </button>
+              </div>
+            ) : (
+              <>
+                {/* Header */}
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 bg-black text-white rounded-2xl flex items-center justify-center text-2xl font-black mx-auto mb-4">
+                    S
+                  </div>
+                  <h2 className="text-2xl font-black uppercase tracking-tighter">
+                    {isSignUp ? 'Create Account' : 'Sign In'}
+                  </h2>
+                  <p className="text-gray-500 font-bold text-sm mt-2">
+                    {pendingCreateStore 
+                      ? (isSignUp ? 'Create an account to start building your store' : 'Sign in to start building your store')
+                      : (isSignUp ? 'Sign up to create and manage your store' : 'Sign in to create and manage your store')}
+                  </p>
+                </div>
+
+                {/* Error Message */}
+                {loginError && (
+                  <div className="mb-4 p-4 bg-red-50 border-2 border-red-200 rounded-xl">
+                    <p className="text-red-600 font-bold text-sm text-center">⚠️ {loginError}</p>
+                  </div>
+                )}
+
+                {/* Form */}
+                <div className="space-y-4">
+                  <input
+                    type="email"
+                    placeholder="Email address"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && (isSignUp ? handleSignUp() : handleSignIn())}
+                    className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl font-bold focus:border-black focus:outline-none transition-colors"
+                  />
+                  <input
+                    type="password"
+                    placeholder={isSignUp ? "Password (min 6 characters)" : "Password"}
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && (isSignUp ? handleSignUp() : handleSignIn())}
+                    className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl font-bold focus:border-black focus:outline-none transition-colors"
+                  />
+                </div>
+
+                {/* Buttons */}
+                <div className="mt-6 space-y-3">
+                  <button
+                    onClick={isSignUp ? handleSignUp : handleSignIn}
+                    disabled={loginLoading}
+                    className="w-full py-4 bg-black text-white font-black uppercase tracking-widest rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {loginLoading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        {isSignUp ? 'Creating Account...' : 'Signing In...'}
+                      </>
+                    ) : (
+                      isSignUp ? 'Create Account' : 'Sign In'
+                    )}
+                  </button>
+                  <button
+                    onClick={handleHideLogin}
+                    disabled={loginLoading}
+                    className="w-full py-3 text-gray-500 font-bold hover:text-black transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                </div>
+
+                {/* Toggle Sign In / Sign Up */}
+                <p className="text-center text-sm text-gray-500 font-bold mt-6">
+                  {isSignUp ? (
+                    <>
+                      Already have an account?{' '}
+                      <button 
+                        onClick={() => { setIsSignUp(false); setLoginError(null); }}
+                        className="text-black font-black hover:underline"
+                      >
+                        Sign In
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      Don't have an account?{' '}
+                      <button 
+                        onClick={() => { setIsSignUp(true); setLoginError(null); }}
+                        className="text-black font-black hover:underline"
+                      >
+                        Sign Up
+                      </button>
+                    </>
+                  )}
+                </p>
+              </>
+            )}
           </div>
         </div>
       )}
 
-      {!user && (view === 'inventory' || view === 'store') && (
-        <button 
-          onClick={handleShowLogin} 
-          className="fixed top-4 right-4 z-40 bg-black text-white px-4 py-2 rounded font-bold"
-        >
-          Login to Manage
-        </button>
-      )}
-
-      {user && (
-        <button 
-          onClick={signOut} 
-          className="fixed top-4 right-4 z-40 bg-red-500 text-white px-4 py-2 rounded font-bold"
-        >
-          Logout
-        </button>
-      )}
       
       <main className="flex-grow">
         {view === 'landing' && (
@@ -399,22 +699,31 @@ const AppContent: React.FC = () => {
         )}
 
         {view === 'create-store' && (
-          <div className="min-h-screen bg-[#FDFDFD]">
-            <CreateStoreFlow
-              onClose={handleCloseCreateStore}
-              onStoreCreated={handleStoreCreated}
-            />
-          </div>
+          <CreateStoreFlow
+            onClose={handleCloseCreateStore}
+            onStoreCreated={handleStoreCreated}
+          />
         )}
 
         {view === 'public-store' && publicStoreSlug && (
           <PublicStorePage slug={publicStoreSlug} />
         )}
 
-        {view === 'store' && (renderShopView())}
+        {view === 'store' && renderShopView()}
 
-        {view === 'inventory' && (renderItemsView())}
+        {view === 'inventory' && renderItemsView()}
 
+        {view === 'settings' && (
+           <div className="pt-24 md:pt-36 px-4 md:px-6 max-w-[1200px] mx-auto">
+             <button
+               onClick={() => handleNav('landing')}
+               className="mb-4 flex items-center gap-2 text-gray-600 hover:text-black font-bold transition-colors group text-sm"
+             >
+               <span className="group-hover:-translate-x-1 transition-transform">←</span>
+               Back to Home
+             </button>
+           </div>
+        )}
         {view === 'settings' && (
            <SettingsView 
              settings={settings}
@@ -425,11 +734,22 @@ const AppContent: React.FC = () => {
         )}
 
         {['privacy', 'terms', 'help'].includes(view) && (
+           <div className="pt-24 md:pt-36 px-4 md:px-6 max-w-[1200px] mx-auto">
+             <button
+               onClick={() => handleNav('landing')}
+               className="mb-4 flex items-center gap-2 text-gray-600 hover:text-black font-bold transition-colors group text-sm"
+             >
+               <span className="group-hover:-translate-x-1 transition-transform">←</span>
+               Back to Home
+             </button>
+           </div>
+        )}
+        {['privacy', 'terms', 'help'].includes(view) && (
            <InfoPage pageId={view} />
         )}
       </main>
 
-      {/* Cart Drawer & Checkout unchanged */}
+      {/* Cart Drawer */}
       <CartDrawer 
         isOpen={isCartOpen} 
         onClose={() => setIsCartOpen(false)} 
@@ -438,6 +758,7 @@ const AppContent: React.FC = () => {
         onItemClick={() => {}}
       />
       
+      {/* Checkout Bar */}
       {isCartOpen && cart.length > 0 && (
         <div className="fixed bottom-0 right-0 w-full md:w-[450px] bg-white border-t border-gray-100 p-6 pb-8 md:pb-6 z-[10002] shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
            <div className="flex justify-between items-center mb-4">

@@ -101,8 +101,20 @@ const StoreDetailsForm: React.FC<StoreDetailsFormProps> = ({ onNext, onCancel })
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] pt-32 pb-24 px-4 md:px-6 max-w-[1200px] mx-auto">
-      <div className="clay-card w-full max-w-2xl my-8 mx-auto">
+    <div className="bg-[#FDFDFD] pt-24 md:pt-36 pb-24 px-4 md:px-6">
+      {/* Back Button - in wider container */}
+      <div className="max-w-[1200px] mx-auto">
+        <button
+          onClick={onCancel}
+          className="mb-6 flex items-center gap-2 text-gray-600 hover:text-black font-bold transition-colors group text-sm"
+        >
+          <span className="group-hover:-translate-x-1 transition-transform">←</span>
+          Back to Home
+        </button>
+      </div>
+
+      {/* Content - in narrower centered container */}
+      <div className="w-full max-w-2xl mx-auto bg-white rounded-2xl border-2 border-black shadow-xl">
         <form onSubmit={handleSubmit} className="p-6 md:p-8">
           {/* Header */}
           <div className="mb-8 border-b-2 border-black pb-6">
@@ -223,7 +235,7 @@ const StoreDetailsForm: React.FC<StoreDetailsFormProps> = ({ onNext, onCancel })
                   <span className="text-2xl">📷</span>
                 </div>
               )}
-              <label className="clay-button px-6 py-3 cursor-pointer text-xs">
+              <label className="px-6 py-3 cursor-pointer text-xs bg-white text-black font-black uppercase tracking-widest rounded-full border-2 border-black hover:bg-gray-100 transition-all">
                 <input
                   type="file"
                   accept="image/*"
@@ -242,15 +254,15 @@ const StoreDetailsForm: React.FC<StoreDetailsFormProps> = ({ onNext, onCancel })
             <button
               type="button"
               onClick={onCancel}
-              className="clay-button px-8 py-4 text-sm flex-1"
+              className="px-8 py-4 text-sm flex-1 bg-white text-black font-black uppercase tracking-widest rounded-full border-2 border-black hover:bg-gray-100 transition-all"
             >
-              Cancel
+              CANCEL
             </button>
             <button
               type="submit"
-              className="clay-button-primary px-8 py-4 text-sm flex-1"
+              className="px-8 py-4 text-sm flex-1 bg-black text-white font-black uppercase tracking-widest rounded-full border-2 border-black hover:bg-gray-900 transition-all"
             >
-              Next: Add Products →
+              ADD PRODUCTS →
             </button>
           </div>
         </form>

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React from 'react';
+import React, { useState } from 'react';
 
 interface StoreCreatedSuccessProps {
   storeSlug: string;
@@ -18,11 +18,28 @@ const StoreCreatedSuccess: React.FC<StoreCreatedSuccessProps> = ({
   onClose, 
   onViewStore 
 }) => {
-  const storeUrl = `http://localhost:3000/store/${storeSlug}`;
+  const [copied, setCopied] = useState(false);
+  const [viewHovered, setViewHovered] = useState(false);
+  const [whatsappHovered, setWhatsappHovered] = useState(false);
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(storeUrl);
-    // No popup/toast - silent copy
+  const storeUrl = `${window.location.origin}/store/${storeSlug}`;
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(storeUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = storeUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   const handleShareOnWhatsApp = () => {
@@ -31,11 +48,23 @@ const StoreCreatedSuccess: React.FC<StoreCreatedSuccessProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] pt-32 pb-24 px-4 md:px-6">
+    <div className="min-h-screen bg-[#FDFDFD] pt-24 md:pt-36 pb-24 px-4 md:px-6">
+      {/* Back Button - in wider container */}
+      <div className="max-w-[1200px] mx-auto">
+        <button
+          onClick={onClose}
+          className="mb-6 flex items-center gap-2 text-gray-600 hover:text-black font-bold transition-colors group text-sm"
+        >
+          <span className="group-hover:-translate-x-1 transition-transform">←</span>
+          Back to Home
+        </button>
+      </div>
+
+      {/* Content - in narrower centered container */}
       <div className="max-w-2xl mx-auto">
         {/* Success Icon */}
         <div className="text-center mb-6">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
             <span className="text-4xl">✅</span>
           </div>
         </div>
@@ -51,7 +80,7 @@ const StoreCreatedSuccess: React.FC<StoreCreatedSuccessProps> = ({
         </p>
 
         {/* Store Link Section */}
-        <div className="bg-gray-50 rounded-2xl p-6 mb-8 clay-card">
+        <div className="bg-gray-50 rounded-2xl p-6 mb-8 border-2 border-gray-100">
           <h3 className="font-black uppercase tracking-widest text-sm mb-4 text-center">
             Your Store Link
           </h3>
@@ -60,37 +89,59 @@ const StoreCreatedSuccess: React.FC<StoreCreatedSuccessProps> = ({
               type="text"
               value={storeUrl}
               readOnly
-              className="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 focus:outline-none font-bold bg-white clay-card"
+              onClick={(e) => (e.target as HTMLInputElement).select()}
+              className="flex-1 w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-black font-bold bg-white cursor-pointer transition-colors"
             />
             <button
               onClick={handleCopyLink}
-              className="px-6 py-3 bg-black text-white font-bold uppercase tracking-widest rounded-xl hover:bg-gray-800 transition-colors whitespace-nowrap clay-button"
+              className={`w-full md:w-auto px-6 py-3 font-bold uppercase tracking-widest rounded-xl transition-all whitespace-nowrap flex items-center justify-center gap-2 ${
+                copied 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-black text-white hover:bg-gray-800 active:scale-95'
+              }`}
             >
-              Copy Link
+              {copied ? (
+                <>
+                  <span>✓</span>
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <span>📋</span>
+                  Copy Link
+                </>
+              )}
             </button>
           </div>
         </div>
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+          {/* Share on WhatsApp */}
           <button
             onClick={handleShareOnWhatsApp}
-            className="flex-1 px-8 py-4 bg-green-500 text-white font-bold uppercase tracking-widest rounded-full hover:bg-green-600 transition-colors flex items-center justify-center gap-2 clay-button"
+            onMouseEnter={() => setWhatsappHovered(true)}
+            onMouseLeave={() => setWhatsappHovered(false)}
+            className="flex-1 px-8 py-4 bg-[#25D366] text-white font-black uppercase tracking-widest rounded-full hover:bg-[#1da851] active:scale-95 transition-all flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
           >
-            <span>💬</span>
+            <span className={`text-xl transition-transform ${whatsappHovered ? 'scale-125' : ''}`}>💬</span>
             Share on WhatsApp
           </button>
+
+          {/* View My Store */}
           <button
             onClick={onViewStore}
-            className="flex-1 px-8 py-4 bg-black text-white font-bold uppercase tracking-widest rounded-full hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 clay-button-primary"
+            onMouseEnter={() => setViewHovered(true)}
+            onMouseLeave={() => setViewHovered(false)}
+            className="flex-1 px-8 py-4 bg-black text-white font-black uppercase tracking-widest rounded-full hover:bg-gray-800 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
           >
-            <span>👁️</span>
+            <span className={`text-xl transition-transform ${viewHovered ? 'scale-125' : ''}`}>👁️</span>
             View My Store
           </button>
         </div>
 
         {/* Quick Tips */}
-        <div className="bg-blue-50 rounded-2xl p-6 mb-6 clay-card">
+        <div className="bg-blue-50 rounded-2xl p-6 mb-6 border-2 border-blue-100">
           <h3 className="font-black uppercase tracking-widest text-sm mb-4 flex items-center gap-2">
             <span>💡</span>
             Quick Tips
@@ -106,7 +157,7 @@ const StoreCreatedSuccess: React.FC<StoreCreatedSuccessProps> = ({
         <div className="text-center">
           <button
             onClick={onClose}
-            className="px-8 py-4 bg-white text-black font-bold uppercase tracking-widest rounded-full border-2 border-black hover:bg-black hover:text-white transition-colors clay-button"
+            className="px-8 py-4 bg-white text-black font-bold uppercase tracking-widest rounded-full border-2 border-black hover:bg-black hover:text-white active:scale-95 transition-all"
           >
             Close
           </button>
