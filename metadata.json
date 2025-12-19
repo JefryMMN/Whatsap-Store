@@ -1,0 +1,8 @@
+{
+  "name": "WhatsApp ShopSmart",
+  "description": "Unified AI-powered customer support for small teams. Slack, Email, and Chat in one clean monochromatic workspace.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
