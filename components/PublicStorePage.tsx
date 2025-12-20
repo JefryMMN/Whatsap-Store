@@ -550,14 +550,16 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
       {/* Header */}
       <div className="pt-8 md:pt-12 pb-6 md:pb-16 px-4 md:px-6">
         <div className="max-w-[1200px] mx-auto">
-          {/* Back Button */}
-          <button
-            onClick={() => window.location.href = '/'}
-            className="mb-4 flex items-center gap-2 text-gray-600 hover:text-black font-bold transition-colors group text-sm"
-          >
-            <span className="group-hover:-translate-x-1 transition-transform">←</span>
-            Back to Home
-          </button>
+          {/* Back Button - Only show for store owner */}
+          {isOwner && (
+            <button
+              onClick={() => window.location.href = '/'}
+              className="mb-4 flex items-center gap-2 text-gray-600 hover:text-black font-bold transition-colors group text-sm"
+            >
+              <span className="group-hover:-translate-x-1 transition-transform">←</span>
+              Back to Home
+            </button>
+          )}
 
           <div className="text-center">
           {/* Logo */}
