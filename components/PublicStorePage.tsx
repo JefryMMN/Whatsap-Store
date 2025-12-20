@@ -506,49 +506,54 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FAFAFA] via-white to-[#F5F5F5] text-black font-sans selection:bg-black selection:text-white pb-24 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#F8F8F8] via-white to-[#F0F0F0] text-black font-sans selection:bg-black selection:text-white pb-24 relative overflow-hidden">
       {/* Background Decorative Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Large gradient blobs */}
-        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-gradient-to-br from-gray-200/80 via-gray-100/50 to-transparent rounded-full blur-3xl"></div>
-        <div className="absolute -top-20 -left-40 w-[500px] h-[500px] bg-gradient-to-br from-gray-300/40 to-transparent rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-[700px] h-[500px] bg-gradient-to-tl from-gray-200/60 to-transparent rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-gray-300/30 to-transparent rounded-full blur-3xl"></div>
+        {/* Large gradient blobs - more visible */}
+        <div className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-gradient-to-br from-gray-300 via-gray-200 to-transparent rounded-full blur-3xl opacity-70"></div>
+        <div className="absolute top-[20%] -left-20 w-[400px] h-[400px] bg-gradient-to-br from-gray-300 to-transparent rounded-full blur-3xl opacity-50"></div>
+        <div className="absolute bottom-0 right-[10%] w-[600px] h-[400px] bg-gradient-to-tl from-gray-300 to-transparent rounded-full blur-3xl opacity-60"></div>
+        <div className="absolute bottom-[20%] -left-20 w-[350px] h-[350px] bg-gradient-to-tr from-gray-300 to-transparent rounded-full blur-3xl opacity-40"></div>
         
-        {/* Animated floating circles */}
-        <div className="absolute top-[15%] right-[10%] w-32 h-32 border-[3px] border-black/10 rounded-full animate-pulse"></div>
-        <div className="absolute top-[25%] right-[20%] w-16 h-16 bg-black/5 rounded-full"></div>
-        <div className="absolute top-[10%] left-[5%] w-24 h-24 border-[3px] border-black/10 rounded-full"></div>
-        <div className="absolute top-[35%] left-[8%] w-8 h-8 bg-black/10 rounded-full"></div>
-        <div className="absolute bottom-[35%] right-[8%] w-40 h-40 border-[3px] border-black/10 rounded-full"></div>
-        <div className="absolute bottom-[25%] left-[12%] w-20 h-20 border-[3px] border-black/10 rounded-full animate-pulse"></div>
-        <div className="absolute top-[50%] right-[3%] w-12 h-12 bg-black/5 rounded-full"></div>
-        <div className="absolute bottom-[15%] right-[15%] w-6 h-6 bg-black/10 rounded-full"></div>
+        {/* Decorative circles - more visible */}
+        <div className="absolute top-[12%] right-[8%] w-40 h-40 border-[4px] border-black/20 rounded-full"></div>
+        <div className="absolute top-[8%] right-[15%] w-20 h-20 bg-black/10 rounded-full"></div>
+        <div className="absolute top-[5%] left-[3%] w-32 h-32 border-[4px] border-black/15 rounded-full"></div>
+        <div className="absolute top-[25%] left-[6%] w-12 h-12 bg-black/15 rounded-full"></div>
+        <div className="absolute bottom-[30%] right-[5%] w-48 h-48 border-[4px] border-black/15 rounded-full"></div>
+        <div className="absolute bottom-[20%] left-[8%] w-28 h-28 border-[4px] border-black/20 rounded-full"></div>
+        <div className="absolute top-[45%] right-[2%] w-16 h-16 bg-black/10 rounded-full"></div>
+        <div className="absolute bottom-[10%] right-[20%] w-10 h-10 bg-black/15 rounded-full"></div>
+        <div className="absolute top-[60%] left-[2%] w-24 h-24 border-[3px] border-black/10 rounded-full"></div>
         
-        {/* Decorative dots pattern */}
-        <div className="absolute top-[20%] left-[15%] grid grid-cols-3 gap-2">
-          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
-          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
-          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
-          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
-          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
-          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
+        {/* Decorative dots pattern - more visible */}
+        <div className="absolute top-[15%] left-[12%] grid grid-cols-4 gap-3">
+          {[...Array(16)].map((_, i) => (
+            <div key={i} className="w-2.5 h-2.5 bg-black/20 rounded-full"></div>
+          ))}
         </div>
         
-        <div className="absolute bottom-[30%] right-[12%] grid grid-cols-3 gap-2">
-          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
-          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
-          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
-          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
-          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
-          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
+        <div className="absolute bottom-[25%] right-[10%] grid grid-cols-4 gap-3">
+          {[...Array(16)].map((_, i) => (
+            <div key={i} className="w-2.5 h-2.5 bg-black/20 rounded-full"></div>
+          ))}
         </div>
         
-        {/* Subtle grid pattern */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{
-          backgroundImage: `radial-gradient(circle, #000 1px, transparent 1px)`,
-          backgroundSize: '30px 30px'
+        <div className="absolute top-[50%] left-[5%] grid grid-cols-3 gap-2">
+          {[...Array(9)].map((_, i) => (
+            <div key={i} className="w-2 h-2 bg-black/15 rounded-full"></div>
+          ))}
+        </div>
+        
+        {/* Subtle dot grid pattern */}
+        <div className="absolute inset-0 opacity-[0.08]" style={{
+          backgroundImage: `radial-gradient(circle, #000 1.5px, transparent 1.5px)`,
+          backgroundSize: '40px 40px'
         }}></div>
+        
+        {/* Corner accent shapes */}
+        <div className="absolute top-0 right-0 w-64 h-64 border-l-[6px] border-b-[6px] border-black/10 rounded-bl-[100px]"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 border-r-[6px] border-t-[6px] border-black/10 rounded-tr-[80px]"></div>
       </div>
 
       {/* Owner Management Buttons */}
