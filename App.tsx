@@ -176,7 +176,10 @@ const AppContent: React.FC = () => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email: loginEmail,
-        password: loginPassword
+        password: loginPassword,
+        options: {
+          emailRedirectTo: `${window.location.origin}/create-store`
+        }
       });
 
       if (error) throw error;
