@@ -561,22 +561,25 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] text-black font-sans selection:bg-black selection:text-white flex flex-col overflow-hidden">
-      <Navbar 
-        onNavClick={handleNav} 
-        activeView={view} 
-        user={user}
-        userStoreSlug={userStoreSlug}
-        onSignIn={handleShowLogin}
-        onSignOut={async () => {
-          try {
-            await signOut();
-            setUserStoreSlug(null);
-            window.location.href = '/';
-          } catch (err) {
-            console.error('Logout error:', err);
-          }
-        }}
-      />
+      {/* Hide navbar on public store pages for clean customer view */}
+      {view !== 'public-store' && (
+        <Navbar 
+          onNavClick={handleNav} 
+          activeView={view} 
+          user={user}
+          userStoreSlug={userStoreSlug}
+          onSignIn={handleShowLogin}
+          onSignOut={async () => {
+            try {
+              await signOut();
+              setUserStoreSlug(null);
+              window.location.href = '/';
+            } catch (err) {
+              console.error('Logout error:', err);
+            }
+          }}
+        />
+      )}
       
       {/* Professional Login/SignUp Modal */}
       {showLogin && (

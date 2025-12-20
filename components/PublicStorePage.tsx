@@ -548,7 +548,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
       )}
 
       {/* Header */}
-      <div className="pt-24 md:pt-36 pb-6 md:pb-16 px-4 md:px-6">
+      <div className="pt-8 md:pt-12 pb-6 md:pb-16 px-4 md:px-6">
         <div className="max-w-[1200px] mx-auto">
           {/* Back Button */}
           <button
