@@ -52,6 +52,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
   const [productForm, setProductForm] = useState<ProductFormData>(initialProductForm);
   const [submitting, setSubmitting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -503,15 +504,47 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] text-black font-sans selection:bg-black selection:text-white pb-24 relative">
-      {/* Owner Management Button - Single floating button */}
+      {/* Owner Management Buttons */}
       {isOwner && (
-        <button
-          onClick={openAddModal}
-          className="fixed bottom-8 right-6 z-50 bg-black text-white px-6 py-4 rounded-2xl font-black uppercase tracking-wider text-sm shadow-2xl hover:shadow-xl transition-all flex items-center gap-3 hover:scale-105"
-        >
-          <span className="text-xl">➕</span>
-          Add Product
-        </button>
+        <div className="fixed bottom-8 right-6 z-50 flex flex-col gap-3">
+          {/* Share Store Button */}
+          <button
+            onClick={() => {
+              const storeUrl = `${window.location.origin}/store/${slug}`;
+              navigator.clipboard.writeText(storeUrl).then(() => {
+                setLinkCopied(true);
+                setTimeout(() => setLinkCopied(false), 2000);
+              }).catch(() => {
+                // Fallback
+                const textArea = document.createElement('textarea');
+                textArea.value = storeUrl;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                setLinkCopied(true);
+                setTimeout(() => setLinkCopied(false), 2000);
+              });
+            }}
+            className={`px-6 py-4 rounded-2xl font-black uppercase tracking-wider text-sm shadow-2xl hover:shadow-xl transition-all flex items-center gap-3 hover:scale-105 ${
+              linkCopied 
+                ? 'bg-green-500 text-white' 
+                : 'bg-white text-black border-2 border-black'
+            }`}
+          >
+            <span className="text-xl">{linkCopied ? '✓' : '🔗'}</span>
+            {linkCopied ? 'COPIED!' : 'SHARE STORE'}
+          </button>
+          
+          {/* Add Product Button */}
+          <button
+            onClick={openAddModal}
+            className="bg-black text-white px-6 py-4 rounded-2xl font-black uppercase tracking-wider text-sm shadow-2xl hover:shadow-xl transition-all flex items-center gap-3 hover:scale-105"
+          >
+            <span className="text-xl">➕</span>
+            ADD PRODUCT
+          </button>
+        </div>
       )}
 
       {/* Header */}
