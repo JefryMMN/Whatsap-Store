@@ -120,7 +120,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
         };
 
         setStore(processedStore);
-        
+
         // Update page title to store name
         document.title = `${storeData.name} | Storefront`;
       }
@@ -265,7 +265,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
 
     try {
       let imageUrl: string | undefined = undefined;
-      
+
       // Only upload new image if one was selected
       if (productForm.imageFile) {
         const uploadedUrl = await uploadProductImage(productForm.imageFile);
@@ -343,14 +343,14 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
 
     return (
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
-        <div 
+        <div
           className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl"
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
           <div className="sticky top-0 bg-white px-8 py-6 border-b-2 border-gray-100 flex items-center justify-between">
             <h2 className="text-2xl font-black uppercase tracking-tighter">{title}</h2>
-            <button 
+            <button
               onClick={onClose}
               className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
             >
@@ -365,14 +365,14 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
               <label className="block font-black uppercase tracking-widest text-sm mb-3">
                 Product Image
               </label>
-              <div 
+              <div
                 onClick={() => fileInputRef.current?.click()}
                 className="w-full aspect-video bg-gray-100 rounded-2xl border-2 border-dashed border-gray-300 hover:border-black cursor-pointer transition-colors flex items-center justify-center overflow-hidden"
               >
                 {productForm.imagePreview ? (
-                  <img 
-                    src={productForm.imagePreview} 
-                    alt="Preview" 
+                  <img
+                    src={productForm.imagePreview}
+                    alt="Preview"
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -474,7 +474,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center p-4">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-black border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
           <h3 className="text-2xl font-black uppercase tracking-tighter">Loading Store...</h3>
@@ -485,7 +485,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
 
   if (error || !store) {
     return (
-      <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center p-4">
         <div className="clay-card p-12 text-center max-w-md">
           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <span className="text-4xl">😕</span>
@@ -572,15 +572,15 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
               });
             }}
             className={`px-6 py-4 rounded-2xl font-black uppercase tracking-wider text-sm shadow-2xl hover:shadow-xl transition-all flex items-center gap-3 hover:scale-105 ${
-              linkCopied 
-                ? 'bg-green-500 text-white' 
+              linkCopied
+                ? 'bg-green-500 text-white'
                 : 'bg-white text-black border-2 border-black'
             }`}
           >
             <span className="text-xl">{linkCopied ? '✓' : '🔗'}</span>
             {linkCopied ? 'COPIED!' : 'SHARE STORE'}
           </button>
-          
+
           {/* Add Product Button */}
           <button
             onClick={openAddModal}
@@ -638,7 +638,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
             <p className="text-gray-500 font-bold max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
               {store.description}
             </p>
-            
+
             {/* Decorative line */}
             <div className="flex items-center justify-center gap-3 mt-8">
               <div className="w-12 h-0.5 bg-black/20 rounded-full"></div>
