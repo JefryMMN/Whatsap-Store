@@ -506,54 +506,29 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F8F8F8] via-white to-[#F0F0F0] text-black font-sans selection:bg-black selection:text-white pb-24 relative overflow-hidden">
-      {/* Background Decorative Elements */}
+    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white pb-24 relative overflow-hidden">
+      {/* Background - Warm Peach/Orange Gradient Blob */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Large gradient blobs - more visible */}
-        <div className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-gradient-to-br from-gray-300 via-gray-200 to-transparent rounded-full blur-3xl opacity-70"></div>
-        <div className="absolute top-[20%] -left-20 w-[400px] h-[400px] bg-gradient-to-br from-gray-300 to-transparent rounded-full blur-3xl opacity-50"></div>
-        <div className="absolute bottom-0 right-[10%] w-[600px] h-[400px] bg-gradient-to-tl from-gray-300 to-transparent rounded-full blur-3xl opacity-60"></div>
-        <div className="absolute bottom-[20%] -left-20 w-[350px] h-[350px] bg-gradient-to-tr from-gray-300 to-transparent rounded-full blur-3xl opacity-40"></div>
-        
-        {/* Decorative circles - more visible */}
-        <div className="absolute top-[12%] right-[8%] w-40 h-40 border-[4px] border-black/20 rounded-full"></div>
-        <div className="absolute top-[8%] right-[15%] w-20 h-20 bg-black/10 rounded-full"></div>
-        <div className="absolute top-[5%] left-[3%] w-32 h-32 border-[4px] border-black/15 rounded-full"></div>
-        <div className="absolute top-[25%] left-[6%] w-12 h-12 bg-black/15 rounded-full"></div>
-        <div className="absolute bottom-[30%] right-[5%] w-48 h-48 border-[4px] border-black/15 rounded-full"></div>
-        <div className="absolute bottom-[20%] left-[8%] w-28 h-28 border-[4px] border-black/20 rounded-full"></div>
-        <div className="absolute top-[45%] right-[2%] w-16 h-16 bg-black/10 rounded-full"></div>
-        <div className="absolute bottom-[10%] right-[20%] w-10 h-10 bg-black/15 rounded-full"></div>
-        <div className="absolute top-[60%] left-[2%] w-24 h-24 border-[3px] border-black/10 rounded-full"></div>
-        
-        {/* Decorative dots pattern - more visible */}
-        <div className="absolute top-[15%] left-[12%] grid grid-cols-4 gap-3">
-          {[...Array(16)].map((_, i) => (
-            <div key={i} className="w-2.5 h-2.5 bg-black/20 rounded-full"></div>
-          ))}
-        </div>
-        
-        <div className="absolute bottom-[25%] right-[10%] grid grid-cols-4 gap-3">
-          {[...Array(16)].map((_, i) => (
-            <div key={i} className="w-2.5 h-2.5 bg-black/20 rounded-full"></div>
-          ))}
-        </div>
-        
-        <div className="absolute top-[50%] left-[5%] grid grid-cols-3 gap-2">
-          {[...Array(9)].map((_, i) => (
-            <div key={i} className="w-2 h-2 bg-black/15 rounded-full"></div>
-          ))}
-        </div>
-        
-        {/* Subtle dot grid pattern */}
-        <div className="absolute inset-0 opacity-[0.08]" style={{
-          backgroundImage: `radial-gradient(circle, #000 1.5px, transparent 1.5px)`,
-          backgroundSize: '40px 40px'
+        {/* Main gradient blob - top area */}
+        <div className="absolute -top-20 -left-20 right-0 h-[500px] md:h-[600px]" style={{
+          background: 'linear-gradient(135deg, #fde4d2 0%, #f8d4bc 25%, #f5c9a8 50%, #f0b892 75%, #e8a678 100%)',
+          borderRadius: '0 0 50% 50% / 0 0 100% 100%'
         }}></div>
         
-        {/* Corner accent shapes */}
-        <div className="absolute top-0 right-0 w-64 h-64 border-l-[6px] border-b-[6px] border-black/10 rounded-bl-[100px]"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 border-r-[6px] border-t-[6px] border-black/10 rounded-tr-[80px]"></div>
+        {/* Soft overlay gradient for depth */}
+        <div className="absolute top-0 left-0 right-0 h-[450px] md:h-[550px] opacity-60" style={{
+          background: 'radial-gradient(ellipse at 30% 20%, #fff5ee 0%, transparent 50%)',
+        }}></div>
+        
+        {/* Secondary warm accent */}
+        <div className="absolute top-[10%] right-[-10%] w-[400px] h-[400px] rounded-full opacity-40" style={{
+          background: 'radial-gradient(circle, #f5c9a8 0%, transparent 70%)',
+        }}></div>
+        
+        {/* Subtle bottom gradient */}
+        <div className="absolute bottom-0 left-0 right-0 h-[300px] opacity-30" style={{
+          background: 'linear-gradient(to top, #fef3ec 0%, transparent 100%)',
+        }}></div>
       </div>
 
       {/* Owner Management Buttons */}
@@ -599,28 +574,15 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
         </div>
       )}
 
-      {/* Header Section with styled background */}
+      {/* Header Section */}
       <div className="relative">
-        {/* Header background with gradient and pattern */}
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-100 via-gray-50 to-transparent"></div>
-        <div className="absolute inset-0 opacity-[0.03]" style={{
-          backgroundImage: `radial-gradient(circle at 2px 2px, #000 1px, transparent 0)`,
-          backgroundSize: '24px 24px'
-        }}></div>
-        
-        {/* Decorative curved shape */}
-        <div className="absolute bottom-0 left-0 right-0 h-20 bg-[#FDFDFD]" style={{
-          borderTopLeftRadius: '50% 100%',
-          borderTopRightRadius: '50% 100%'
-        }}></div>
-        
         <div className="relative pt-8 md:pt-12 pb-16 md:pb-28 px-4 md:px-6">
           <div className="max-w-[1200px] mx-auto">
             {/* Back Button - Only show for store owner */}
             {isOwner && (
               <button
                 onClick={() => window.location.href = '/'}
-                className="mb-4 flex items-center gap-2 text-gray-600 hover:text-black font-bold transition-colors group text-sm"
+                className="mb-4 flex items-center gap-2 text-gray-700 hover:text-black font-bold transition-colors group text-sm"
               >
                 <span className="group-hover:-translate-x-1 transition-transform">←</span>
                 Back to Home
