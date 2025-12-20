@@ -84,6 +84,10 @@ const StoreDetailsForm: React.FC<StoreDetailsFormProps> = ({ onNext, onCancel })
       newErrors.whatsappNumber = 'Please enter a valid WhatsApp number with country code (e.g., +919876543210)';
     }
 
+    if (!formData.logoFile) {
+      newErrors.logo = 'Shop logo is required';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -212,7 +216,7 @@ const StoreDetailsForm: React.FC<StoreDetailsFormProps> = ({ onNext, onCancel })
           {/* Logo Upload */}
           <div className="mb-8">
             <label className="block font-black uppercase tracking-widest text-xs mb-3">
-              Shop Logo (Optional)
+              Shop Logo <span className="text-red-500">*</span>
             </label>
             <div className="flex items-center gap-4">
               {formData.logoPreview ? (
