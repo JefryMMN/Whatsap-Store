@@ -560,7 +560,7 @@ const AppContent: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] text-black font-sans selection:bg-black selection:text-white flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-[#FAFAFA] text-black font-sans selection:bg-black selection:text-white flex flex-col overflow-hidden">
       {/* Hide navbar on public store pages for clean customer view */}
       {view !== 'public-store' && (
         <Navbar 

@@ -13,7 +13,48 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onStart }) => {
   return (
-    <section className="relative overflow-hidden pt-32 md:pt-48 pb-20 md:pb-32 px-4 md:px-6 z-0 bg-[#FDFDFD]">
+    <section className="relative overflow-hidden pt-32 md:pt-48 pb-20 md:pb-32 px-4 md:px-6 z-0 bg-[#FAFAFA]">
+      {/* Background Gradient - Orange/Peach to Blue style like reference image */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Main orange/peach gradient - right side */}
+        <div className="absolute top-0 right-0 w-[70%] h-[80%]" style={{
+          background: 'linear-gradient(200deg, #F5A962 0%, #F7C08A 25%, #FBD9B3 50%, #FEF0E3 75%, transparent 100%)',
+          opacity: 0.9,
+          filter: 'blur(60px)',
+        }}></div>
+
+        {/* Secondary warm accent - top right */}
+        <div className="absolute -top-20 -right-20 w-[500px] h-[500px] rounded-full" style={{
+          background: 'radial-gradient(circle, #F5A962 0%, #F7C08A 30%, transparent 70%)',
+          opacity: 0.7,
+          filter: 'blur(40px)',
+        }}></div>
+
+        {/* Blue/Cyan gradient - bottom left */}
+        <div className="absolute bottom-0 left-0 w-[60%] h-[60%]" style={{
+          background: 'linear-gradient(45deg, #7DD3E8 0%, #A5E1EE 30%, #C8EEF5 50%, #E8F8FB 70%, transparent 100%)',
+          opacity: 0.8,
+          filter: 'blur(60px)',
+        }}></div>
+
+        {/* Secondary blue accent - bottom left corner */}
+        <div className="absolute -bottom-32 -left-32 w-[400px] h-[400px] rounded-full" style={{
+          background: 'radial-gradient(circle, #5BC4D9 0%, #7DD3E8 40%, transparent 70%)',
+          opacity: 0.6,
+          filter: 'blur(50px)',
+        }}></div>
+
+        {/* Center white/cream softening layer */}
+        <div className="absolute inset-0" style={{
+          background: 'radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 40%, transparent 70%)',
+        }}></div>
+
+        {/* Subtle middle blending gradient */}
+        <div className="absolute top-[30%] left-[30%] w-[50%] h-[50%]" style={{
+          background: 'radial-gradient(ellipse, rgba(250,245,240,0.8) 0%, transparent 70%)',
+          filter: 'blur(30px)',
+        }}></div>
+      </div>
       <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center relative z-10">
         <div className="flex flex-col items-center lg:items-start text-center lg:text-left z-10 order-2 lg:order-1">
             <span className="inline-block px-4 md:px-6 py-2 bg-[#25D366] text-white font-black text-[9px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.4em] mb-6 md:mb-8 shadow-xl rounded-full">
