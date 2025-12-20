@@ -11,11 +11,12 @@ interface NavbarProps {
   onNavClick: (targetId: string) => void;
   activeView: AppView;
   user: any;
+  userStoreSlug?: string | null;
   onSignIn: () => void;
   onSignOut: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onNavClick, activeView, user, onSignIn, onSignOut }) => {
+const Navbar: React.FC<NavbarProps> = ({ onNavClick, activeView, user, userStoreSlug, onSignIn, onSignOut }) => {
   return (
     <div className="fixed top-4 md:top-8 left-0 w-full px-2 md:px-6 flex justify-center z-[150]">
       <nav className="w-full max-w-[1200px] flex items-center justify-between px-4 md:px-8 py-4 md:py-6 bg-white/90 backdrop-blur-md border-2 md:border-4 border-black relative shadow-2xl rounded-xl md:rounded-2xl">
@@ -40,6 +41,16 @@ const Navbar: React.FC<NavbarProps> = ({ onNavClick, activeView, user, onSignIn,
                {nav.label}
              </button>
            ))}
+
+           {/* My Store Button - Only show if user has a store */}
+           {user && userStoreSlug && (
+             <button 
+               onClick={() => window.location.href = `/store/${userStoreSlug}`}
+               className="px-3 md:px-6 py-2 md:py-3 text-[9px] md:text-[10px] font-black uppercase tracking-[0.1em] md:tracking-[0.2em] transition-all rounded-lg md:rounded-xl border md:border-2 whitespace-nowrap text-black border-transparent hover:border-green-500 hover:bg-green-50 hover:text-green-600"
+             >
+               My Store
+             </button>
+           )}
 
            {/* Divider */}
            <div className="w-px h-6 bg-gray-300 mx-1 md:mx-2 hidden sm:block"></div>

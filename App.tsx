@@ -96,6 +96,7 @@ const AppContent: React.FC = () => {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [loginLoading, setLoginLoading] = useState(false);
   const [pendingCreateStore, setPendingCreateStore] = useState(false);
+  const [userStoreSlug, setUserStoreSlug] = useState<string | null>(null);
   
   // Settings / Store Profile
   const [settings, setSettings] = useState<AppSettings>({
@@ -116,6 +117,30 @@ const AppContent: React.FC = () => {
   });
 
   const [activeCategory, setActiveCategory] = useState('All');
+
+  // Fetch user's store when logged in
+  useEffect(() => {
+    const fetchUserStore = async () => {
+      if (user) {
+        const { data, error } = await supabase
+          .from('stores')
+          .select('slug')
+          .eq('creator_id', user.id)
+          .limit(1)
+          .single();
+        
+        if (data && !error) {
+          setUserStoreSlug(data.slug);
+        } else {
+          setUserStoreSlug(null);
+        }
+      } else {
+        setUserStoreSlug(null);
+      }
+    };
+    
+    fetchUserStore();
+  }, [user]);
 
   // Handle redirect to create store after login OR show login modal if not logged in
   useEffect(() => {
@@ -330,6 +355,7 @@ const AppContent: React.FC = () => {
 
   const handleStoreCreated = (slug: string) => {
     setPublicStoreSlug(slug);
+    setUserStoreSlug(slug); // Save to show "My Store" in navbar
     setView('public-store');
     window.history.pushState({}, '', `/store/${slug}`);
   };
@@ -539,10 +565,12 @@ const AppContent: React.FC = () => {
         onNavClick={handleNav} 
         activeView={view} 
         user={user}
+        userStoreSlug={userStoreSlug}
         onSignIn={handleShowLogin}
         onSignOut={async () => {
           try {
             await signOut();
+            setUserStoreSlug(null);
             window.location.href = '/';
           } catch (err) {
             console.error('Logout error:', err);
