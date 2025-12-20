@@ -476,7 +476,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
   if (error || !store) {
     return (
       <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center p-4">
-        <div className="clay-card p-12 text-center max-w-md">
+        <div className="bg-white rounded-3xl p-12 text-center max-w-md shadow-xl">
           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <span className="text-4xl">😕</span>
           </div>
@@ -497,42 +497,41 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-black font-sans selection:bg-black selection:text-white pb-24 relative overflow-hidden">
-      {/* Background Gradient - Orange/Peach to Blue style matching Hero */}
+      {/* Background Gradient - Orange/Peach to Blue - EXACTLY like SoftBank Vision Fund */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Main orange gradient - right side (dominant) */}
+        {/* Main orange gradient - right side */}
         <div className="absolute -top-[10%] -right-[5%] w-[65%] h-[90%]" style={{
           background: 'linear-gradient(220deg, #E8954A 0%, #F2A85D 15%, #F7BC7D 35%, #FBCEA0 55%, #FDE4C8 75%, transparent 100%)',
-          opacity: 1,
           filter: 'blur(40px)',
         }}></div>
 
-        {/* Secondary warm accent - extends orange coverage */}
+        {/* Secondary warm accent */}
         <div className="absolute top-[5%] right-0 w-[45%] h-[70%]" style={{
           background: 'linear-gradient(200deg, #E8954A 0%, #F2A85D 30%, transparent 80%)',
           opacity: 0.8,
           filter: 'blur(50px)',
         }}></div>
 
-        {/* Blue/Cyan gradient - bottom left (prominent) */}
+        {/* Blue/Cyan gradient - bottom left */}
         <div className="absolute -bottom-[15%] -left-[10%] w-[70%] h-[65%]" style={{
           background: 'linear-gradient(35deg, #5AAFC7 0%, #6EC4D8 20%, #8AD4E5 40%, #A8E2EF 60%, #C8EEF5 80%, transparent 100%)',
           opacity: 0.95,
           filter: 'blur(45px)',
         }}></div>
 
-        {/* Secondary blue accent - reinforces bottom left */}
+        {/* Secondary blue accent */}
         <div className="absolute bottom-0 left-[5%] w-[50%] h-[50%]" style={{
           background: 'radial-gradient(ellipse at 30% 80%, #6EC4D8 0%, #8AD4E5 30%, transparent 70%)',
           opacity: 0.7,
           filter: 'blur(40px)',
         }}></div>
 
-        {/* Center/Left white area - keeps content readable */}
+        {/* Center white area for readability */}
         <div className="absolute inset-0" style={{
           background: 'radial-gradient(ellipse at 35% 45%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 25%, rgba(255,255,255,0.3) 50%, transparent 75%)',
         }}></div>
 
-        {/* Soft cream layer for warmth */}
+        {/* Soft cream layer */}
         <div className="absolute top-[20%] left-[15%] w-[50%] h-[60%]" style={{
           background: 'radial-gradient(ellipse, rgba(253,250,245,0.9) 0%, transparent 70%)',
           filter: 'blur(30px)',
@@ -633,7 +632,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
       </div>
 
       {/* Products Grid */}
-      <div className="px-4 md:px-6 pb-20">
+      <div className="relative px-4 md:px-6 pb-20">
         <div className="max-w-[1200px] mx-auto">
           <div className="mb-8">
             <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">
@@ -642,7 +641,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
           </div>
 
           {store.products.length === 0 ? (
-            <div className="clay-card p-12 md:p-20 text-center">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-12 md:p-20 text-center shadow-xl">
               <span className="text-6xl mb-4 block">📦</span>
               <p className="font-black uppercase tracking-widest text-gray-400 mb-8">
                 No products available yet
@@ -650,7 +649,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
               {isOwner && (
                 <button
                   onClick={openAddModal}
-                  className="clay-button bg-black text-white px-10 py-5 text-lg font-black"
+                  className="bg-black text-white px-10 py-5 text-lg font-black rounded-full"
                 >
                   ➕ Add Your First Product
                 </button>
@@ -659,7 +658,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {store.products.map((product) => (
-                <div key={product.id} className="clay-card overflow-hidden group hover:shadow-2xl transition-shadow relative">
+                <div key={product.id} className="bg-white rounded-3xl overflow-hidden group hover:shadow-2xl transition-all shadow-xl relative">
                   {isOwner && (
                     <div className="absolute top-4 right-4 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
@@ -726,7 +725,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
       </div>
 
       {/* Footer */}
-      <div className="mt-20 py-12 border-t-2 border-gray-100">
+      <div className="relative mt-20 py-12 border-t-2 border-gray-100/50">
         <div className="text-center px-4">
           <p className="text-sm font-black uppercase tracking-widest text-gray-400 mb-4">
             Powered by Storefront
