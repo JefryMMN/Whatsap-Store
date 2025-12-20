@@ -120,6 +120,9 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
         };
 
         setStore(processedStore);
+        
+        // Update page title to store name
+        document.title = `${storeData.name} | Storefront`;
       }
     } catch (err) {
       console.error('Unexpected error loading store:', err);
@@ -503,7 +506,51 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] text-black font-sans selection:bg-black selection:text-white pb-24 relative">
+    <div className="min-h-screen bg-gradient-to-br from-[#FAFAFA] via-white to-[#F5F5F5] text-black font-sans selection:bg-black selection:text-white pb-24 relative overflow-hidden">
+      {/* Background Decorative Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Large gradient blobs */}
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-gradient-to-br from-gray-200/80 via-gray-100/50 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute -top-20 -left-40 w-[500px] h-[500px] bg-gradient-to-br from-gray-300/40 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-[700px] h-[500px] bg-gradient-to-tl from-gray-200/60 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-gray-300/30 to-transparent rounded-full blur-3xl"></div>
+        
+        {/* Animated floating circles */}
+        <div className="absolute top-[15%] right-[10%] w-32 h-32 border-[3px] border-black/10 rounded-full animate-pulse"></div>
+        <div className="absolute top-[25%] right-[20%] w-16 h-16 bg-black/5 rounded-full"></div>
+        <div className="absolute top-[10%] left-[5%] w-24 h-24 border-[3px] border-black/10 rounded-full"></div>
+        <div className="absolute top-[35%] left-[8%] w-8 h-8 bg-black/10 rounded-full"></div>
+        <div className="absolute bottom-[35%] right-[8%] w-40 h-40 border-[3px] border-black/10 rounded-full"></div>
+        <div className="absolute bottom-[25%] left-[12%] w-20 h-20 border-[3px] border-black/10 rounded-full animate-pulse"></div>
+        <div className="absolute top-[50%] right-[3%] w-12 h-12 bg-black/5 rounded-full"></div>
+        <div className="absolute bottom-[15%] right-[15%] w-6 h-6 bg-black/10 rounded-full"></div>
+        
+        {/* Decorative dots pattern */}
+        <div className="absolute top-[20%] left-[15%] grid grid-cols-3 gap-2">
+          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
+          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
+          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
+          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
+          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
+          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
+        </div>
+        
+        <div className="absolute bottom-[30%] right-[12%] grid grid-cols-3 gap-2">
+          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
+          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
+          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
+          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
+          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
+          <div className="w-2 h-2 bg-black/10 rounded-full"></div>
+        </div>
+        
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `radial-gradient(circle, #000 1px, transparent 1px)`,
+          backgroundSize: '30px 30px'
+        }}></div>
+      </div>
+
       {/* Owner Management Buttons */}
       {isOwner && (
         <div className="fixed bottom-8 right-6 z-50 flex flex-col gap-3">
@@ -547,45 +594,73 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
         </div>
       )}
 
-      {/* Header */}
-      <div className="pt-8 md:pt-12 pb-6 md:pb-16 px-4 md:px-6">
-        <div className="max-w-[1200px] mx-auto">
-          {/* Back Button - Only show for store owner */}
-          {isOwner && (
-            <button
-              onClick={() => window.location.href = '/'}
-              className="mb-4 flex items-center gap-2 text-gray-600 hover:text-black font-bold transition-colors group text-sm"
-            >
-              <span className="group-hover:-translate-x-1 transition-transform">←</span>
-              Back to Home
-            </button>
-          )}
-
-          <div className="text-center">
-          {/* Logo */}
-          <div className="mb-6">
-            {store.logo_url ? (
-              <img
-                src={store.logo_url}
-                alt={store.name}
-                className="w-20 h-20 md:w-28 md:h-28 object-cover rounded-2xl md:rounded-3xl mx-auto shadow-2xl border-2 border-gray-100"
-              />
-            ) : (
-              <div className="w-20 h-20 md:w-28 md:h-28 bg-black text-white mx-auto flex items-center justify-center text-3xl md:text-5xl font-black rounded-2xl md:rounded-3xl shadow-2xl">
-                {store.name.charAt(0).toUpperCase()}
-              </div>
+      {/* Header Section with styled background */}
+      <div className="relative">
+        {/* Header background with gradient and pattern */}
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-100 via-gray-50 to-transparent"></div>
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `radial-gradient(circle at 2px 2px, #000 1px, transparent 0)`,
+          backgroundSize: '24px 24px'
+        }}></div>
+        
+        {/* Decorative curved shape */}
+        <div className="absolute bottom-0 left-0 right-0 h-20 bg-[#FDFDFD]" style={{
+          borderTopLeftRadius: '50% 100%',
+          borderTopRightRadius: '50% 100%'
+        }}></div>
+        
+        <div className="relative pt-8 md:pt-12 pb-16 md:pb-28 px-4 md:px-6">
+          <div className="max-w-[1200px] mx-auto">
+            {/* Back Button - Only show for store owner */}
+            {isOwner && (
+              <button
+                onClick={() => window.location.href = '/'}
+                className="mb-4 flex items-center gap-2 text-gray-600 hover:text-black font-bold transition-colors group text-sm"
+              >
+                <span className="group-hover:-translate-x-1 transition-transform">←</span>
+                Back to Home
+              </button>
             )}
-          </div>
 
-          {/* Store Name */}
-          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4 leading-none">
-            {store.name}
-          </h1>
+            <div className="text-center">
+            {/* Logo */}
+            <div className="mb-6">
+              {store.logo_url ? (
+                <div className="relative inline-block">
+                  <div className="absolute inset-0 bg-black/10 rounded-2xl md:rounded-3xl blur-xl transform translate-y-2"></div>
+                  <img
+                    src={store.logo_url}
+                    alt={store.name}
+                    className="relative w-24 h-24 md:w-32 md:h-32 object-cover rounded-2xl md:rounded-3xl mx-auto shadow-2xl border-4 border-white"
+                  />
+                </div>
+              ) : (
+                <div className="relative inline-block">
+                  <div className="absolute inset-0 bg-black/20 rounded-2xl md:rounded-3xl blur-xl transform translate-y-2"></div>
+                  <div className="relative w-24 h-24 md:w-32 md:h-32 bg-black text-white mx-auto flex items-center justify-center text-4xl md:text-6xl font-black rounded-2xl md:rounded-3xl shadow-2xl">
+                    {store.name.charAt(0).toUpperCase()}
+                  </div>
+                </div>
+              )}
+            </div>
 
-          {/* Store Description */}
-          <p className="text-gray-500 font-bold max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
-            {store.description}
-          </p>
+            {/* Store Name */}
+            <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4 leading-none">
+              {store.name}
+            </h1>
+
+            {/* Store Description */}
+            <p className="text-gray-500 font-bold max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
+              {store.description}
+            </p>
+            
+            {/* Decorative line */}
+            <div className="flex items-center justify-center gap-3 mt-8">
+              <div className="w-12 h-0.5 bg-black/20 rounded-full"></div>
+              <div className="w-2 h-2 bg-black/30 rounded-full"></div>
+              <div className="w-12 h-0.5 bg-black/20 rounded-full"></div>
+            </div>
+            </div>
           </div>
         </div>
       </div>

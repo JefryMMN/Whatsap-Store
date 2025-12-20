@@ -721,13 +721,6 @@ const AppContent: React.FC = () => {
         {view === 'landing' && (
            <div className="animate-fade-in">
               <Hero onStart={handleOpenCreateStore} />
-              <div className="py-12 md:py-20 bg-black text-white text-center">
-                <h2 className="text-2xl md:text-3xl font-black uppercase tracking-widest mb-8">Sample Storefronts</h2>
-                <div className="flex justify-center gap-4 flex-wrap px-4">
-                   <button onClick={() => handleNav('store')} className="clay-button bg-white text-black px-6 md:px-8 py-3 md:py-4 text-xs md:text-sm">Browse All Shops</button>
-                   <button onClick={() => handleNav('inventory')} className="clay-button bg-white text-black px-6 md:px-8 py-3 md:py-4 text-xs md:text-sm">Browse All Items</button>
-                </div>
-              </div>
               <Footer onLinkClick={(e, id) => { e.preventDefault(); handleNav(id); }} />
            </div>
         )}
