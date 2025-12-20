@@ -506,28 +506,46 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
   }
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white pb-24 relative overflow-hidden">
-      {/* Background - Warm Peach/Orange Gradient Blob */}
+    <div className="min-h-screen bg-[#FAFAFA] text-black font-sans selection:bg-black selection:text-white pb-24 relative overflow-hidden">
+      {/* Background Gradient - Orange/Peach to Blue style matching Hero */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Main gradient blob - top area */}
-        <div className="absolute -top-20 -left-20 right-0 h-[500px] md:h-[600px]" style={{
-          background: 'linear-gradient(135deg, #fde4d2 0%, #f8d4bc 25%, #f5c9a8 50%, #f0b892 75%, #e8a678 100%)',
-          borderRadius: '0 0 50% 50% / 0 0 100% 100%'
+        {/* Main orange/peach gradient - right side */}
+        <div className="absolute top-0 right-0 w-[70%] h-[70%]" style={{
+          background: 'linear-gradient(200deg, #F5A962 0%, #F7C08A 25%, #FBD9B3 50%, #FEF0E3 75%, transparent 100%)',
+          opacity: 0.85,
+          filter: 'blur(60px)',
         }}></div>
-        
-        {/* Soft overlay gradient for depth */}
-        <div className="absolute top-0 left-0 right-0 h-[450px] md:h-[550px] opacity-60" style={{
-          background: 'radial-gradient(ellipse at 30% 20%, #fff5ee 0%, transparent 50%)',
+
+        {/* Secondary warm accent - top right */}
+        <div className="absolute -top-20 -right-20 w-[450px] h-[450px] rounded-full" style={{
+          background: 'radial-gradient(circle, #F5A962 0%, #F7C08A 30%, transparent 70%)',
+          opacity: 0.65,
+          filter: 'blur(40px)',
         }}></div>
-        
-        {/* Secondary warm accent */}
-        <div className="absolute top-[10%] right-[-10%] w-[400px] h-[400px] rounded-full opacity-40" style={{
-          background: 'radial-gradient(circle, #f5c9a8 0%, transparent 70%)',
+
+        {/* Blue/Cyan gradient - bottom left */}
+        <div className="absolute bottom-0 left-0 w-[55%] h-[55%]" style={{
+          background: 'linear-gradient(45deg, #7DD3E8 0%, #A5E1EE 30%, #C8EEF5 50%, #E8F8FB 70%, transparent 100%)',
+          opacity: 0.75,
+          filter: 'blur(60px)',
         }}></div>
-        
-        {/* Subtle bottom gradient */}
-        <div className="absolute bottom-0 left-0 right-0 h-[300px] opacity-30" style={{
-          background: 'linear-gradient(to top, #fef3ec 0%, transparent 100%)',
+
+        {/* Secondary blue accent - bottom left corner */}
+        <div className="absolute -bottom-32 -left-32 w-[350px] h-[350px] rounded-full" style={{
+          background: 'radial-gradient(circle, #5BC4D9 0%, #7DD3E8 40%, transparent 70%)',
+          opacity: 0.55,
+          filter: 'blur(50px)',
+        }}></div>
+
+        {/* Center white/cream softening layer */}
+        <div className="absolute inset-0" style={{
+          background: 'radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 40%, transparent 70%)',
+        }}></div>
+
+        {/* Subtle middle blending gradient */}
+        <div className="absolute top-[25%] left-[30%] w-[50%] h-[50%]" style={{
+          background: 'radial-gradient(ellipse, rgba(250,245,240,0.8) 0%, transparent 70%)',
+          filter: 'blur(30px)',
         }}></div>
       </div>
 
