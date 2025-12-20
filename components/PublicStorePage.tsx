@@ -120,7 +120,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
         };
 
         setStore(processedStore);
-        
+
         // Update page title to store name
         document.title = `${storeData.name} | Storefront`;
       }
@@ -223,7 +223,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
 
       setShowAddModal(false);
       setProductForm(initialProductForm);
-      await loadStore(); // Refresh products
+      await loadStore();
     } catch (err: any) {
       console.error('Add product error:', err);
       setActionError(err.message || 'Failed to add product');
@@ -265,8 +265,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
 
     try {
       let imageUrl: string | undefined = undefined;
-      
-      // Only upload new image if one was selected
+
       if (productForm.imageFile) {
         const uploadedUrl = await uploadProductImage(productForm.imageFile);
         if (uploadedUrl) {
@@ -280,7 +279,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
         price: price
       };
 
-      // Only update image_url if a new image was uploaded
       if (imageUrl) {
         updateData.image_url = imageUrl;
       }
@@ -295,7 +293,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
       setShowEditModal(false);
       setEditingProduct(null);
       setProductForm(initialProductForm);
-      await loadStore(); // Refresh products
+      await loadStore();
     } catch (err: any) {
       console.error('Edit product error:', err);
       setActionError(err.message || 'Failed to update product');
@@ -322,7 +320,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
 
       if (deleteError) throw deleteError;
 
-      await loadStore(); // Refresh products
+      await loadStore();
     } catch (err: any) {
       console.error('Delete product error:', err);
       alert(err.message || 'Failed to delete product');
@@ -343,14 +341,13 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
 
     return (
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
-        <div 
+        <div
           className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl"
           onClick={e => e.stopPropagation()}
         >
-          {/* Header */}
           <div className="sticky top-0 bg-white px-8 py-6 border-b-2 border-gray-100 flex items-center justify-between">
             <h2 className="text-2xl font-black uppercase tracking-tighter">{title}</h2>
-            <button 
+            <button
               onClick={onClose}
               className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
             >
@@ -358,21 +355,19 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
             </button>
           </div>
 
-          {/* Form */}
           <div className="p-8 space-y-6">
-            {/* Image Upload */}
             <div>
               <label className="block font-black uppercase tracking-widest text-sm mb-3">
                 Product Image
               </label>
-              <div 
+              <div
                 onClick={() => fileInputRef.current?.click()}
                 className="w-full aspect-video bg-gray-100 rounded-2xl border-2 border-dashed border-gray-300 hover:border-black cursor-pointer transition-colors flex items-center justify-center overflow-hidden"
               >
                 {productForm.imagePreview ? (
-                  <img 
-                    src={productForm.imagePreview} 
-                    alt="Preview" 
+                  <img
+                    src={productForm.imagePreview}
+                    alt="Preview"
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -391,7 +386,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
               />
             </div>
 
-            {/* Name */}
             <div>
               <label className="block font-black uppercase tracking-widest text-sm mb-3">
                 Product Name *
@@ -405,7 +399,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
               />
             </div>
 
-            {/* Price */}
             <div>
               <label className="block font-black uppercase tracking-widest text-sm mb-3">
                 Price ({store?.currency}) *
@@ -421,7 +414,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
               />
             </div>
 
-            {/* Description */}
             <div>
               <label className="block font-black uppercase tracking-widest text-sm mb-3">
                 Description
@@ -435,7 +427,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
               />
             </div>
 
-            {/* Error */}
             {actionError && (
               <div className="bg-red-50 border-2 border-red-200 text-red-700 px-5 py-4 rounded-xl font-bold text-sm">
                 ⚠️ {actionError}
@@ -443,7 +434,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
             )}
           </div>
 
-          {/* Footer */}
           <div className="sticky bottom-0 bg-white px-8 py-6 border-t-2 border-gray-100 flex gap-4">
             <button
               onClick={onClose}
@@ -474,7 +464,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center p-4">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-black border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
           <h3 className="text-2xl font-black uppercase tracking-tighter">Loading Store...</h3>
@@ -485,7 +475,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
 
   if (error || !store) {
     return (
-      <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center p-4">
         <div className="clay-card p-12 text-center max-w-md">
           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <span className="text-4xl">😕</span>
@@ -506,35 +496,52 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
   }
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white pb-24 relative overflow-hidden">
-      {/* Background - Warm Peach/Orange Gradient Blob */}
+    <div className="min-h-screen bg-[#FAFAFA] text-black font-sans selection:bg-black selection:text-white pb-24 relative overflow-hidden">
+      {/* Background Gradient - Orange/Peach to Blue style matching Hero */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Main gradient blob - top area */}
-        <div className="absolute -top-20 -left-20 right-0 h-[500px] md:h-[600px]" style={{
-          background: 'linear-gradient(135deg, #fde4d2 0%, #f8d4bc 25%, #f5c9a8 50%, #f0b892 75%, #e8a678 100%)',
-          borderRadius: '0 0 50% 50% / 0 0 100% 100%'
+        {/* Main orange gradient - right side (dominant) */}
+        <div className="absolute -top-[10%] -right-[5%] w-[65%] h-[90%]" style={{
+          background: 'linear-gradient(220deg, #E8954A 0%, #F2A85D 15%, #F7BC7D 35%, #FBCEA0 55%, #FDE4C8 75%, transparent 100%)',
+          opacity: 1,
+          filter: 'blur(40px)',
         }}></div>
-        
-        {/* Soft overlay gradient for depth */}
-        <div className="absolute top-0 left-0 right-0 h-[450px] md:h-[550px] opacity-60" style={{
-          background: 'radial-gradient(ellipse at 30% 20%, #fff5ee 0%, transparent 50%)',
+
+        {/* Secondary warm accent - extends orange coverage */}
+        <div className="absolute top-[5%] right-0 w-[45%] h-[70%]" style={{
+          background: 'linear-gradient(200deg, #E8954A 0%, #F2A85D 30%, transparent 80%)',
+          opacity: 0.8,
+          filter: 'blur(50px)',
         }}></div>
-        
-        {/* Secondary warm accent */}
-        <div className="absolute top-[10%] right-[-10%] w-[400px] h-[400px] rounded-full opacity-40" style={{
-          background: 'radial-gradient(circle, #f5c9a8 0%, transparent 70%)',
+
+        {/* Blue/Cyan gradient - bottom left (prominent) */}
+        <div className="absolute -bottom-[15%] -left-[10%] w-[70%] h-[65%]" style={{
+          background: 'linear-gradient(35deg, #5AAFC7 0%, #6EC4D8 20%, #8AD4E5 40%, #A8E2EF 60%, #C8EEF5 80%, transparent 100%)',
+          opacity: 0.95,
+          filter: 'blur(45px)',
         }}></div>
-        
-        {/* Subtle bottom gradient */}
-        <div className="absolute bottom-0 left-0 right-0 h-[300px] opacity-30" style={{
-          background: 'linear-gradient(to top, #fef3ec 0%, transparent 100%)',
+
+        {/* Secondary blue accent - reinforces bottom left */}
+        <div className="absolute bottom-0 left-[5%] w-[50%] h-[50%]" style={{
+          background: 'radial-gradient(ellipse at 30% 80%, #6EC4D8 0%, #8AD4E5 30%, transparent 70%)',
+          opacity: 0.7,
+          filter: 'blur(40px)',
+        }}></div>
+
+        {/* Center/Left white area - keeps content readable */}
+        <div className="absolute inset-0" style={{
+          background: 'radial-gradient(ellipse at 35% 45%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 25%, rgba(255,255,255,0.3) 50%, transparent 75%)',
+        }}></div>
+
+        {/* Soft cream layer for warmth */}
+        <div className="absolute top-[20%] left-[15%] w-[50%] h-[60%]" style={{
+          background: 'radial-gradient(ellipse, rgba(253,250,245,0.9) 0%, transparent 70%)',
+          filter: 'blur(30px)',
         }}></div>
       </div>
 
       {/* Owner Management Buttons */}
       {isOwner && (
         <div className="fixed bottom-8 right-6 z-50 flex flex-col gap-3">
-          {/* Share Store Button */}
           <button
             onClick={() => {
               const storeUrl = `${window.location.origin}/store/${slug}`;
@@ -542,7 +549,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
                 setLinkCopied(true);
                 setTimeout(() => setLinkCopied(false), 2000);
               }).catch(() => {
-                // Fallback
                 const textArea = document.createElement('textarea');
                 textArea.value = storeUrl;
                 document.body.appendChild(textArea);
@@ -554,16 +560,15 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
               });
             }}
             className={`px-6 py-4 rounded-2xl font-black uppercase tracking-wider text-sm shadow-2xl hover:shadow-xl transition-all flex items-center gap-3 hover:scale-105 ${
-              linkCopied 
-                ? 'bg-green-500 text-white' 
+              linkCopied
+                ? 'bg-green-500 text-white'
                 : 'bg-white text-black border-2 border-black'
             }`}
           >
             <span className="text-xl">{linkCopied ? '✓' : '🔗'}</span>
             {linkCopied ? 'COPIED!' : 'SHARE STORE'}
           </button>
-          
-          {/* Add Product Button */}
+
           <button
             onClick={openAddModal}
             className="bg-black text-white px-6 py-4 rounded-2xl font-black uppercase tracking-wider text-sm shadow-2xl hover:shadow-xl transition-all flex items-center gap-3 hover:scale-105"
@@ -578,7 +583,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
       <div className="relative">
         <div className="relative pt-8 md:pt-12 pb-16 md:pb-28 px-4 md:px-6">
           <div className="max-w-[1200px] mx-auto">
-            {/* Back Button - Only show for store owner */}
             {isOwner && (
               <button
                 onClick={() => window.location.href = '/'}
@@ -590,43 +594,39 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
             )}
 
             <div className="text-center">
-            {/* Logo */}
-            <div className="mb-6">
-              {store.logo_url ? (
-                <div className="relative inline-block">
-                  <div className="absolute inset-0 bg-black/10 rounded-2xl md:rounded-3xl blur-xl transform translate-y-2"></div>
-                  <img
-                    src={store.logo_url}
-                    alt={store.name}
-                    className="relative w-24 h-24 md:w-32 md:h-32 object-cover rounded-2xl md:rounded-3xl mx-auto shadow-2xl border-4 border-white"
-                  />
-                </div>
-              ) : (
-                <div className="relative inline-block">
-                  <div className="absolute inset-0 bg-black/20 rounded-2xl md:rounded-3xl blur-xl transform translate-y-2"></div>
-                  <div className="relative w-24 h-24 md:w-32 md:h-32 bg-black text-white mx-auto flex items-center justify-center text-4xl md:text-6xl font-black rounded-2xl md:rounded-3xl shadow-2xl">
-                    {store.name.charAt(0).toUpperCase()}
+              <div className="mb-6">
+                {store.logo_url ? (
+                  <div className="relative inline-block">
+                    <div className="absolute inset-0 bg-black/10 rounded-2xl md:rounded-3xl blur-xl transform translate-y-2"></div>
+                    <img
+                      src={store.logo_url}
+                      alt={store.name}
+                      className="relative w-24 h-24 md:w-32 md:h-32 object-cover rounded-2xl md:rounded-3xl mx-auto shadow-2xl border-4 border-white"
+                    />
                   </div>
-                </div>
-              )}
-            </div>
+                ) : (
+                  <div className="relative inline-block">
+                    <div className="absolute inset-0 bg-black/20 rounded-2xl md:rounded-3xl blur-xl transform translate-y-2"></div>
+                    <div className="relative w-24 h-24 md:w-32 md:h-32 bg-black text-white mx-auto flex items-center justify-center text-4xl md:text-6xl font-black rounded-2xl md:rounded-3xl shadow-2xl">
+                      {store.name.charAt(0).toUpperCase()}
+                    </div>
+                  </div>
+                )}
+              </div>
 
-            {/* Store Name */}
-            <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4 leading-none">
-              {store.name}
-            </h1>
+              <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4 leading-none">
+                {store.name}
+              </h1>
 
-            {/* Store Description */}
-            <p className="text-gray-500 font-bold max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
-              {store.description}
-            </p>
-            
-            {/* Decorative line */}
-            <div className="flex items-center justify-center gap-3 mt-8">
-              <div className="w-12 h-0.5 bg-black/20 rounded-full"></div>
-              <div className="w-2 h-2 bg-black/30 rounded-full"></div>
-              <div className="w-12 h-0.5 bg-black/20 rounded-full"></div>
-            </div>
+              <p className="text-gray-500 font-bold max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
+                {store.description}
+              </p>
+
+              <div className="flex items-center justify-center gap-3 mt-8">
+                <div className="w-12 h-0.5 bg-black/20 rounded-full"></div>
+                <div className="w-2 h-2 bg-black/30 rounded-full"></div>
+                <div className="w-12 h-0.5 bg-black/20 rounded-full"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -660,7 +660,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {store.products.map((product) => (
                 <div key={product.id} className="clay-card overflow-hidden group hover:shadow-2xl transition-shadow relative">
-                  {/* Owner Edit/Delete Buttons */}
                   {isOwner && (
                     <div className="absolute top-4 right-4 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
@@ -686,7 +685,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
                     </div>
                   )}
 
-                  {/* Product Image */}
                   <div className="aspect-square bg-gray-100 overflow-hidden">
                     <img
                       src={product.image || '/placeholder-image.jpg'}
@@ -698,7 +696,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
                     />
                   </div>
 
-                  {/* Product Info */}
                   <div className="p-6">
                     <h3 className="font-black text-xl mb-2 line-clamp-1">{product.name}</h3>
 
@@ -708,7 +705,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
                       </p>
                     )}
 
-                    {/* Price and Buy Button */}
                     <div className="flex items-center justify-between gap-4 pt-6 border-t-2 border-gray-100">
                       <div className="text-3xl font-black">
                         {store.currency}{product.price}
@@ -745,7 +741,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
         </div>
       </div>
 
-      {/* Add Product Modal */}
       <ProductModal
         isOpen={showAddModal}
         onClose={() => {
@@ -758,7 +753,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
         submitText="Add Product"
       />
 
-      {/* Edit Product Modal */}
       <ProductModal
         isOpen={showEditModal}
         onClose={() => {
