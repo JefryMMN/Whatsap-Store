@@ -16,42 +16,42 @@ const Hero: React.FC<HeroProps> = ({ onStart }) => {
     <section className="relative overflow-hidden pt-32 md:pt-48 pb-20 md:pb-32 px-4 md:px-6 z-0 bg-[#FAFAFA]">
       {/* Background Gradient - Orange/Peach to Blue style like reference image */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Main orange/peach gradient - right side */}
-        <div className="absolute top-0 right-0 w-[70%] h-[80%]" style={{
-          background: 'linear-gradient(200deg, #F5A962 0%, #F7C08A 25%, #FBD9B3 50%, #FEF0E3 75%, transparent 100%)',
-          opacity: 0.9,
-          filter: 'blur(60px)',
+        {/* Main orange gradient - right side (dominant) */}
+        <div className="absolute -top-[10%] -right-[5%] w-[65%] h-[90%]" style={{
+          background: 'linear-gradient(220deg, #E8954A 0%, #F2A85D 15%, #F7BC7D 35%, #FBCEA0 55%, #FDE4C8 75%, transparent 100%)',
+          opacity: 1,
+          filter: 'blur(40px)',
         }}></div>
 
-        {/* Secondary warm accent - top right */}
-        <div className="absolute -top-20 -right-20 w-[500px] h-[500px] rounded-full" style={{
-          background: 'radial-gradient(circle, #F5A962 0%, #F7C08A 30%, transparent 70%)',
+        {/* Secondary warm accent - extends orange coverage */}
+        <div className="absolute top-[5%] right-0 w-[45%] h-[70%]" style={{
+          background: 'linear-gradient(200deg, #E8954A 0%, #F2A85D 30%, transparent 80%)',
+          opacity: 0.8,
+          filter: 'blur(50px)',
+        }}></div>
+
+        {/* Blue/Cyan gradient - bottom left (prominent) */}
+        <div className="absolute -bottom-[15%] -left-[10%] w-[70%] h-[65%]" style={{
+          background: 'linear-gradient(35deg, #5AAFC7 0%, #6EC4D8 20%, #8AD4E5 40%, #A8E2EF 60%, #C8EEF5 80%, transparent 100%)',
+          opacity: 0.95,
+          filter: 'blur(45px)',
+        }}></div>
+
+        {/* Secondary blue accent - reinforces bottom left */}
+        <div className="absolute bottom-0 left-[5%] w-[50%] h-[50%]" style={{
+          background: 'radial-gradient(ellipse at 30% 80%, #6EC4D8 0%, #8AD4E5 30%, transparent 70%)',
           opacity: 0.7,
           filter: 'blur(40px)',
         }}></div>
 
-        {/* Blue/Cyan gradient - bottom left */}
-        <div className="absolute bottom-0 left-0 w-[60%] h-[60%]" style={{
-          background: 'linear-gradient(45deg, #7DD3E8 0%, #A5E1EE 30%, #C8EEF5 50%, #E8F8FB 70%, transparent 100%)',
-          opacity: 0.8,
-          filter: 'blur(60px)',
-        }}></div>
-
-        {/* Secondary blue accent - bottom left corner */}
-        <div className="absolute -bottom-32 -left-32 w-[400px] h-[400px] rounded-full" style={{
-          background: 'radial-gradient(circle, #5BC4D9 0%, #7DD3E8 40%, transparent 70%)',
-          opacity: 0.6,
-          filter: 'blur(50px)',
-        }}></div>
-
-        {/* Center white/cream softening layer */}
+        {/* Center/Left white area - keeps content readable */}
         <div className="absolute inset-0" style={{
-          background: 'radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 40%, transparent 70%)',
+          background: 'radial-gradient(ellipse at 35% 45%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 25%, rgba(255,255,255,0.3) 50%, transparent 75%)',
         }}></div>
 
-        {/* Subtle middle blending gradient */}
-        <div className="absolute top-[30%] left-[30%] w-[50%] h-[50%]" style={{
-          background: 'radial-gradient(ellipse, rgba(250,245,240,0.8) 0%, transparent 70%)',
+        {/* Soft cream layer for warmth */}
+        <div className="absolute top-[20%] left-[15%] w-[50%] h-[60%]" style={{
+          background: 'radial-gradient(ellipse, rgba(253,250,245,0.9) 0%, transparent 70%)',
           filter: 'blur(30px)',
         }}></div>
       </div>
