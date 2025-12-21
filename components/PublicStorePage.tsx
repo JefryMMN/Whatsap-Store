@@ -45,7 +45,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Modal states
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -120,8 +119,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
         };
 
         setStore(processedStore);
-
-        // Update page title to store name
         document.title = `${storeData.name} | Storefront`;
       }
     } catch (err) {
@@ -142,7 +139,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
     window.open(whatsappUrl, '_blank');
   };
 
-  // ========== IMAGE HANDLING ==========
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -179,7 +175,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
     }
   };
 
-  // ========== ADD PRODUCT ==========
   const openAddModal = () => {
     setProductForm(initialProductForm);
     setActionError(null);
@@ -232,7 +227,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
     }
   };
 
-  // ========== EDIT PRODUCT ==========
   const openEditModal = (product: Product) => {
     setEditingProduct(product);
     setProductForm({
@@ -302,7 +296,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
     }
   };
 
-  // ========== DELETE PRODUCT ==========
   const handleDeleteProduct = async (product: Product) => {
     if (!store || !user) return;
 
@@ -329,7 +322,6 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
 
   const isOwner = user && store && store.creator_id === user.id;
 
-  // ========== MODAL COMPONENT ==========
   const ProductModal: React.FC<{
     isOpen: boolean;
     onClose: () => void;
@@ -497,44 +489,80 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-black font-sans selection:bg-black selection:text-white pb-24 relative overflow-hidden">
-      {/* Background Gradient - Orange/Peach to Blue - EXACTLY like SoftBank Vision Fund */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Main orange gradient - right side */}
-        <div className="absolute -top-[10%] -right-[5%] w-[65%] h-[90%]" style={{
-          background: 'linear-gradient(220deg, #E8954A 0%, #F2A85D 15%, #F7BC7D 35%, #FBCEA0 55%, #FDE4C8 75%, transparent 100%)',
-          filter: 'blur(40px)',
+      
+      {/* ============================================= */}
+      {/* HEADER BACKGROUND: White → Blue → Orange/Peach */}
+      {/* ============================================= */}
+      <div className="absolute top-0 left-0 right-0 h-[700px] overflow-hidden pointer-events-none">
+        {/* Base white/cream */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-[#FDFCFA] to-[#FAF8F5]"></div>
+        
+        {/* Light Blue in the middle-left area (between white and orange) */}
+        <div className="absolute top-[10%] left-[5%] w-[50%] h-[80%]" style={{
+          background: 'radial-gradient(ellipse at 40% 50%, rgba(173, 216, 230, 0.5) 0%, rgba(135, 206, 235, 0.3) 30%, rgba(176, 224, 230, 0.2) 50%, transparent 70%)',
+          filter: 'blur(60px)',
         }}></div>
-
-        {/* Secondary warm accent */}
-        <div className="absolute top-[5%] right-0 w-[45%] h-[70%]" style={{
-          background: 'linear-gradient(200deg, #E8954A 0%, #F2A85D 30%, transparent 80%)',
-          opacity: 0.8,
+        
+        {/* Secondary blue accent - softer */}
+        <div className="absolute top-[20%] left-[15%] w-[40%] h-[60%]" style={{
+          background: 'radial-gradient(ellipse at 30% 40%, rgba(135, 206, 250, 0.4) 0%, rgba(173, 216, 230, 0.2) 40%, transparent 70%)',
           filter: 'blur(50px)',
         }}></div>
-
-        {/* Blue/Cyan gradient - bottom left */}
-        <div className="absolute -bottom-[15%] -left-[10%] w-[70%] h-[65%]" style={{
-          background: 'linear-gradient(35deg, #5AAFC7 0%, #6EC4D8 20%, #8AD4E5 40%, #A8E2EF 60%, #C8EEF5 80%, transparent 100%)',
-          opacity: 0.95,
-          filter: 'blur(45px)',
+        
+        {/* Orange/Peach gradient - right side */}
+        <div className="absolute -top-[10%] -right-[10%] w-[70%] h-[100%]" style={{
+          background: 'linear-gradient(220deg, #E8954A 0%, #F2A85D 15%, #F7BC7D 30%, #FBCEA0 50%, #FDE4C8 70%, #FEF0E0 85%, transparent 100%)',
+          filter: 'blur(50px)',
         }}></div>
-
-        {/* Secondary blue accent */}
-        <div className="absolute bottom-0 left-[5%] w-[50%] h-[50%]" style={{
-          background: 'radial-gradient(ellipse at 30% 80%, #6EC4D8 0%, #8AD4E5 30%, transparent 70%)',
+        
+        {/* Warm accent to reinforce orange */}
+        <div className="absolute top-[5%] right-0 w-[50%] h-[70%]" style={{
+          background: 'linear-gradient(200deg, #E8954A 0%, #F2A85D 25%, #FBCEA0 50%, transparent 80%)',
           opacity: 0.7,
+          filter: 'blur(60px)',
+        }}></div>
+        
+        {/* Blend zone - where blue meets orange (creates smooth transition) */}
+        <div className="absolute top-[30%] left-[30%] w-[40%] h-[50%]" style={{
+          background: 'radial-gradient(ellipse at 50% 50%, rgba(253, 245, 240, 0.8) 0%, rgba(250, 240, 235, 0.5) 40%, transparent 70%)',
           filter: 'blur(40px)',
         }}></div>
+      </div>
 
-        {/* Center white area for readability */}
-        <div className="absolute inset-0" style={{
-          background: 'radial-gradient(ellipse at 35% 45%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 25%, rgba(255,255,255,0.3) 50%, transparent 75%)',
+      {/* ============================================= */}
+      {/* FOOTER BACKGROUND: Orange → Blue blend */}
+      {/* ============================================= */}
+      <div className="absolute bottom-0 left-0 right-0 h-[500px] overflow-hidden pointer-events-none">
+        {/* Blue gradient - bottom left */}
+        <div className="absolute -bottom-[20%] -left-[15%] w-[70%] h-[100%]" style={{
+          background: 'linear-gradient(45deg, #5AAFC7 0%, #6EC4D8 20%, #8AD4E5 40%, #A8E2EF 60%, #C8EEF5 80%, transparent 100%)',
+          filter: 'blur(50px)',
         }}></div>
-
-        {/* Soft cream layer */}
-        <div className="absolute top-[20%] left-[15%] w-[50%] h-[60%]" style={{
-          background: 'radial-gradient(ellipse, rgba(253,250,245,0.9) 0%, transparent 70%)',
-          filter: 'blur(30px)',
+        
+        {/* Secondary blue accent */}
+        <div className="absolute bottom-0 left-[5%] w-[50%] h-[70%]" style={{
+          background: 'radial-gradient(ellipse at 30% 70%, #6EC4D8 0%, #8AD4E5 30%, transparent 60%)',
+          opacity: 0.6,
+          filter: 'blur(45px)',
+        }}></div>
+        
+        {/* Orange gradient - bottom right */}
+        <div className="absolute -bottom-[10%] -right-[10%] w-[60%] h-[90%]" style={{
+          background: 'linear-gradient(150deg, transparent 0%, #FEF0E0 20%, #FBCEA0 40%, #F7BC7D 60%, #F2A85D 80%, #E8954A 100%)',
+          filter: 'blur(50px)',
+        }}></div>
+        
+        {/* Warm accent for orange */}
+        <div className="absolute bottom-[10%] right-[5%] w-[45%] h-[60%]" style={{
+          background: 'radial-gradient(ellipse at 70% 60%, #F2A85D 0%, #FBCEA0 30%, transparent 60%)',
+          opacity: 0.6,
+          filter: 'blur(45px)',
+        }}></div>
+        
+        {/* Blend zone - where orange meets blue (smooth transition) */}
+        <div className="absolute bottom-[20%] left-[25%] w-[50%] h-[60%]" style={{
+          background: 'radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.6) 0%, rgba(250, 248, 245, 0.4) 30%, transparent 60%)',
+          filter: 'blur(50px)',
         }}></div>
       </div>
 
@@ -725,7 +753,7 @@ const PublicStorePage: React.FC<PublicStorePageProps> = ({ slug }) => {
       </div>
 
       {/* Footer */}
-      <div className="relative mt-20 py-12 border-t-2 border-gray-100/50">
+      <div className="relative mt-20 py-12">
         <div className="text-center px-4">
           <p className="text-sm font-black uppercase tracking-widest text-gray-400 mb-4">
             Powered by Storefront
